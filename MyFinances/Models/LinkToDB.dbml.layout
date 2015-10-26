@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="LinkToDB">
+  <DataContextMoniker Name="/LinkToDBDataContext" />
+  <nestedChildShapes>
+    <classShape Id="36afb4d3-ac26-4597-b825-9d034984a9e4" absoluteBounds="0.5, 4.625, 2, 2.7324039713541666">
+      <DataClassMoniker Name="/LinkToDBDataContext/BillHistory" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7798b83a-a004-4b05-8d31-326cd3f92468" absoluteBounds="0.51500000000000012, 5.0850000000000009, 1.9700000000000002, 2.1724039713541665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="97fe3b66-c5e9-4363-9124-5064a78c8cad" absoluteBounds="0.5, 0.5, 2, 3.5016097005208326">
+      <DataClassMoniker Name="/LinkToDBDataContext/Bill" />
+      <nestedChildShapes>
+        <elementListCompartment Id="9ab7229f-dd99-4f09-8bf8-aac59e571e9a" absoluteBounds="0.51500000000000012, 0.96, 1.9700000000000002, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="44583c49-65f4-406d-958e-1a01fe22fc83" absoluteBounds="8.375, 5.25, 2, 2.9247054036458318">
+      <DataClassMoniker Name="/LinkToDBDataContext/LoanHistory" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0d0f7c46-a134-4476-ae0e-bee62bdae9c5" absoluteBounds="8.39, 5.7100000000000009, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6e1a39d8-b5c9-4f3a-836b-b77b6546b7e9" absoluteBounds="8.5, 0.5, 2, 3.8862125651041666">
+      <DataClassMoniker Name="/LinkToDBDataContext/Loan" />
+      <nestedChildShapes>
+        <elementListCompartment Id="2db0e4e5-6bb9-42bc-8d36-084a3b733df8" absoluteBounds="8.515, 0.96000000000000085, 1.9700000000000002, 3.3262125651041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="a0008102-8324-41d7-9a18-62781833ec65" absoluteBounds="4.25, 4.25, 2, 1.9631982421874987">
+      <DataClassMoniker Name="/LinkToDBDataContext/PaymentType" />
+      <nestedChildShapes>
+        <elementListCompartment Id="681bfea4-a4e5-4078-9210-9af9f11a2866" absoluteBounds="4.265, 4.7100000000000009, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="6eaab98e-5b65-4afc-8933-637912bb8228" absoluteBounds="4.375, 0.5, 2, 2.5401025390625005">
+      <DataClassMoniker Name="/LinkToDBDataContext/User" />
+      <nestedChildShapes>
+        <elementListCompartment Id="1e50757c-f326-4446-aa08-c786944ef611" absoluteBounds="4.39, 0.96, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(1.5 : 4.00160970052083); (1.5 : 4.625)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LinkToDBDataContext/Bill/Bill_BillHistory" />
+      <nodes>
+        <classShapeMoniker Id="97fe3b66-c5e9-4363-9124-5064a78c8cad" />
+        <classShapeMoniker Id="36afb4d3-ac26-4597-b825-9d034984a9e4" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(9.54760450175891 : 4.38621256510417); (9.54760450175891 : 5.25)]" fixedFrom="Algorithm" fixedTo="Caller">
+      <AssociationMoniker Name="/LinkToDBDataContext/Loan/Loan_LoanHistory" />
+      <nodes>
+        <classShapeMoniker Id="6e1a39d8-b5c9-4f3a-836b-b77b6546b7e9" />
+        <classShapeMoniker Id="44583c49-65f4-406d-958e-1a01fe22fc83" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(4.25 : 5.41909912109375); (2.5 : 5.41909912109375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LinkToDBDataContext/PaymentType/PaymentType_BillHistory" />
+      <nodes>
+        <classShapeMoniker Id="a0008102-8324-41d7-9a18-62781833ec65" />
+        <classShapeMoniker Id="36afb4d3-ac26-4597-b825-9d034984a9e4" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(4.98975217740767 : 4.25); (4.98975217740767 : 3.2850206849972); (2.5 : 3.2850206849972)]" fixedFrom="Caller" fixedTo="Caller">
+      <AssociationMoniker Name="/LinkToDBDataContext/PaymentType/PaymentType_Bill" />
+      <nodes>
+        <classShapeMoniker Id="a0008102-8324-41d7-9a18-62781833ec65" />
+        <classShapeMoniker Id="97fe3b66-c5e9-4363-9124-5064a78c8cad" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(6.25 : 5.65419301251643); (8.375 : 5.65419301251643)]" fixedFrom="Caller" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LinkToDBDataContext/PaymentType/PaymentType_LoanHistory" />
+      <nodes>
+        <classShapeMoniker Id="a0008102-8324-41d7-9a18-62781833ec65" />
+        <classShapeMoniker Id="44583c49-65f4-406d-958e-1a01fe22fc83" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(5.79953619166618 : 4.25); (5.79953619166618 : 3.53663280792425); (8.5 : 3.53663280792425)]" fixedFrom="Caller" fixedTo="Caller">
+      <AssociationMoniker Name="/LinkToDBDataContext/PaymentType/PaymentType_Loan" />
+      <nodes>
+        <classShapeMoniker Id="a0008102-8324-41d7-9a18-62781833ec65" />
+        <classShapeMoniker Id="6e1a39d8-b5c9-4f3a-836b-b77b6546b7e9" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(4.375 : 1.77005126953125); (2.5 : 1.77005126953125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LinkToDBDataContext/User/User_Bill" />
+      <nodes>
+        <classShapeMoniker Id="6eaab98e-5b65-4afc-8933-637912bb8228" />
+        <classShapeMoniker Id="97fe3b66-c5e9-4363-9124-5064a78c8cad" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(6.375 : 1.77005126953125); (8.5 : 1.77005126953125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LinkToDBDataContext/User/User_Loan" />
+      <nodes>
+        <classShapeMoniker Id="6eaab98e-5b65-4afc-8933-637912bb8228" />
+        <classShapeMoniker Id="6e1a39d8-b5c9-4f3a-836b-b77b6546b7e9" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

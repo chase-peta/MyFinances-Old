@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Bill>
+
+@{
+    ViewBag.Title = "Bills";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<p>@Html.ActionLink("Create New", "Create")</p>
+
+<table class="table">
+    <tr>
+        <th>@Html.DisplayNameFor(m => m.Name)</th>
+        <th>@Html.DisplayNameFor(m => m.Payee)</th>
+        <th>@Html.DisplayNameFor(m => m.LastPaidDate)</th>
+        <th style="text-align: right;">@Html.DisplayNameFor(m => m.LastPaidAmount)</th>
+        <th>@Html.DisplayNameFor(m => m.DueDate)</th>
+        <th>@Html.DisplayNameFor(m => m.DueInDays)</th>
+        <th style="text-align: right;">@Html.DisplayNameFor(model => model.Amount)</th>
+    </tr>
+
+@foreach (Bill item in Model)
+{
+    <tr>
+        <td>@Html.ActionLink(Html.DisplayFor(model => item.Name).ToString(), "Edit", new { id = item.Id })</td>
+        <td>@Html.DisplayFor(model => item.Payee)</td>
+        <td>@Html.DisplayFor(model => item.LastPaidDate)</td>
+        <td style="text-align: right;">@Html.DisplayFor(model => item.LastPaidAmount)</td>
+        <td>@Html.DisplayFor(model => item.DueDate)</td>
+        <td>@Html.DisplayFor(model => item.DueInDays)</td>
+        <td style="text-align: right;">@Html.DisplayFor(model => item.Amount)</td>
+    </tr>
+}
+
+</table>
