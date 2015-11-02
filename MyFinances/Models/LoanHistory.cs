@@ -9,7 +9,7 @@ namespace MyFinances.Models
     [MetadataType(typeof(LoanHistoryMeta))]
     public partial class LoanHistory
     {
-        public decimal Amount { get; set; }
+        public decimal Payment { get { return BasicPayment + AddPayment + Interest + Escrow; } }
 
         public decimal Principal { get; set; }
     }
@@ -18,11 +18,10 @@ namespace MyFinances.Models
     {
         public static IEnumerable<LoanHistory> GetLoanHistory(this Loan loan)
         {
-            IEnumerable<LoanHistory> loanHistory = loan.LoanHistories.OrderBy(x => x.DatePaid).Reverse().ToList();
+            IEnumerable<LoanHistory> loanHistory = loan.LoanHistories.OrderBy(x => x.DatePaid).ToList();
             foreach (LoanHistory history in loanHistory)
             {
-                history.Amount = history.AddPayment + history.BasicPayment + history.Escrow + history.Interest;
-                loan.Principal -= history.AddPayment - history.BasicPayment;
+                loan.Principal -= (history.AddPayment + history.BasicPayment);
                 history.Principal = loan.Principal;
             }
             return loanHistory;
@@ -32,23 +31,26 @@ namespace MyFinances.Models
     public class LoanHistoryMeta
     {
         /* Not In Database */
-        [Display(Name = "Amount")]
-        public object Amount { get; set; }
+        [Display(Name = "Payment"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object Payment { get; set; }
+
+        [Display(Name = "Principal"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object Principal { get; set; }
 
         /* In Database */
-        [Display(Name = "Add Payment")]
+        [Display(Name = "Additional"), DisplayFormat(DataFormatString = "{0:c}")]
         public object AddPayment { get; set; }
 
-        [Display(Name = "Basic Payment")]
+        [Display(Name = "Base"), DisplayFormat(DataFormatString = "{0:c}")]
         public object BasicPayment { get; set; }
 
-        [Display(Name = "Date Paid")]
+        [Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public object DatePaid { get; set; }
 
-        [Display(Name = "Escrow")]
+        [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]
         public object Escrow { get; set; }
 
-        [Display(Name = "Interest")]
+        [Display(Name = "Interest"), DisplayFormat(DataFormatString = "{0:c}")]
         public object Interest { get; set; }
 
         [Display(Name = "Payment Type")]

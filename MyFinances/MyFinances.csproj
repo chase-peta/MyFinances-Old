@@ -90,6 +90,15 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\dataTables.bootstrap.css" />
+    <Content Include="Content\dataTables.bootstrap.min.css" />
+    <Content Include="Content\dataTables.foundation.css" />
+    <Content Include="Content\dataTables.foundation.min.css" />
+    <Content Include="Content\dataTables.jqueryui.css" />
+    <Content Include="Content\dataTables.jqueryui.min.css" />
+    <Content Include="Content\jquery.dataTables.css" />
+    <Content Include="Content\jquery.dataTables.min.css" />
+    <Content Include="Content\jquery.dataTables_themeroller.css" />
     <Content Include="Content\Site.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -104,13 +113,22 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\dataTables.bootstrap.js" />
+    <Content Include="Scripts\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\dataTables.foundation.js" />
+    <Content Include="Scripts\dataTables.foundation.min.js" />
+    <Content Include="Scripts\dataTables.jqueryui.js" />
+    <Content Include="Scripts\dataTables.jqueryui.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.dataTables.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -119,20 +137,23 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Business\Extentions.cs" />
-    <Compile Include="Controllers\BillHistoryController.cs" />
     <Compile Include="Controllers\BillsController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoansController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BillHistoryAverage.cs" />
+    <Compile Include="Models\DashboardDateRange.cs" />
+    <Compile Include="Models\DashboardItem.cs" />
+    <Compile Include="Models\DashboardViewModel.cs" />
     <Compile Include="Models\LinkToDB.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>LinkToDB.dbml</DependentUpon>
     </Compile>
     <Compile Include="Models\Bill.cs" />
-    <Compile Include="Models\BillHistories.cs" />
+    <Compile Include="Models\BillHistory.cs" />
     <Compile Include="Models\Loan.cs" />
     <Compile Include="Models\LoanHistory.cs" />
     <Compile Include="Models\LoanOutlook.cs" />
@@ -153,8 +174,9 @@
     <Content Include="Views\Bills\Index.cshtml" />
     <Content Include="Views\Bills\Edit.cshtml" />
     <Content Include="Views\Loans\Edit.cshtml" />
-    <Content Include="Views\BillHistory\Edit.cshtml" />
-    <Content Include="Views\BillHistory\Index.cshtml" />
+    <Content Include="Views\Bills\EditPayment.cshtml" />
+    <Content Include="Views\Bills\AddPayment.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

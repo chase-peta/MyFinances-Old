@@ -1,0 +1,20 @@
+﻿@model DashboardViewModel
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+@foreach (DashboardDateRange range in Model.DateRanges)
+{
+    <div>@range.StartDate</div>
+    <div>@range.EndDate</div>
+    foreach (DashboardItem item in range.Items)
+    {
+        <div>@item.Name</div>
+    }
+}

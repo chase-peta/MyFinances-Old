@@ -8,27 +8,60 @@ namespace MyFinances.Models
     [MetadataType(typeof(LoanMeta))]
     public partial class Loan
     {
-        public decimal MonthlyPayment { get; set; }
-
-        public decimal BaseMonthlyPayment { get; set; }
-
         public decimal Principal { get; set; }
-
-        public DateTime DueDate { get; set; }
-
-        public bool IsPastDue { get; set; }
-
-        public bool IsDueInTenDays { get; set; }
 
         public DateTime LastPaidDate { get; set; }
 
         public decimal LastPaidAmount { get; set; }
 
-        public double DueInDays { get; set; }
-
         public IEnumerable<LoanHistory> LoanHistory { get; set; }
 
         public IEnumerable<LoanOutlook> LoanOutlook { get; set; }
+
+        public DateTime DueDate { get { return LastPaidDate.AddMonths(1); } }
+
+        public bool IsPastDue { get { return DueInDays < 0; } }
+
+        public int HistoryMinYear { get; set; }
+
+        public int HistoryMaxYear { get; set; }
+
+        public int OutlookMinYear { get; set; }
+
+        public int OutlookMaxYear { get; set; }
+
+        public double DueInDays { get { return (DueDate - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).TotalDays; } }
+
+        public int PaymentsRemaining { get { return LoanOutlook.Count(); } }
+
+        public decimal MonthlyPayment
+        {
+            get
+            {
+                return BasePayment + Escrow + AddPayment;
+            }
+        }
+
+        public decimal BasePayment
+        {
+            get
+            {
+                double mp = 0.0;
+
+                if (InterestRate > 0)
+                {
+                    double rate = (Convert.ToDouble(InterestRate) / 100) / 12;
+                    double factor = (rate + (rate / (Math.Pow(rate + 1, Term) - 1)));
+                    mp = Convert.ToDouble(LoanAmount) * factor;
+                }
+                else
+                {
+                    mp = Convert.ToDouble(LoanAmount) / Convert.ToDouble(Term);
+                }
+
+                return Convert.ToDecimal(Math.Ceiling(mp * 100) / 100);
+            }
+        }
     }
 
     public static class LoanExentions
@@ -38,85 +71,115 @@ namespace MyFinances.Models
             IEnumerable<Loan> loans = context.Loans.Where(x => x.IsActive == true).ToList();
             foreach (Loan loan in loans)
             {
-                loan.BaseMonthlyPayment = CalculateMonthlyPayment(loan.LoanAmount, loan.Term, loan.InterestRate) + loan.Escrow;
-                loan.MonthlyPayment = loan.BaseMonthlyPayment + loan.AddPayment;
-                loan.Principal = loan.LoanAmount;
-
-                loan.LoanHistory = loan.GetLoanHistory();
-
-                loan.LastPaidDate = loan.LoanHistory.OrderBy(x => x.DatePaid).Reverse().Select(x => x.DatePaid).FirstOrDefault();
-                loan.LastPaidAmount = loan.LoanHistory.OrderBy(x => x.DatePaid).Reverse().Select(x => x.Amount).FirstOrDefault();
-                loan.DueDate = loan.LastPaidDate.AddMonths(1);
-                loan.DueInDays = (loan.DueDate - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).TotalDays;
-                loan.IsPastDue = (loan.DueInDays < 0);
-                loan.IsDueInTenDays = (loan.DueInDays <= 10 & loan.DueInDays >= 0);
+                loan.LoadLoan();
             }
             return loans;
         }
 
         public static Loan GetLoan(this LinkToDBDataContext context, int id)
         {
-            return context.Loans.FirstOrDefault(x => x.Id == id);
+            Loan loan = context.Loans.FirstOrDefault(x => x.Id == id).LoadLoan();
+            return loan;
         }
 
-        private static decimal CalculateMonthlyPayment(decimal loanAmount, int term, decimal interestRate)
+        public static Loan LoadLoan(this Loan loan)
         {
-            double mp = 0.0;
+            loan.Principal = loan.LoanAmount;
+            loan.LastPaidDate = loan.FirstPaymentDate;
+            loan.LoanHistory = loan.GetLoanHistory();
 
-            if (interestRate > 0)
+            LoanHistory lastHistory = loan.LoanHistory.OrderBy(x => x.DatePaid).Reverse().FirstOrDefault();
+            if (lastHistory != null)
             {
-                double rate = (Convert.ToDouble(interestRate) / 100) / 12;
-                double factor = (rate + (rate / (Math.Pow(rate + 1, term) - 1)));
-                mp = Convert.ToDouble(loanAmount) * factor;
+                loan.LastPaidDate = lastHistory.DatePaid;
+                loan.LastPaidAmount = lastHistory.Payment;
+                loan.Principal = lastHistory.Principal;
             }
-            else
-            {
-                mp = Convert.ToDouble(loanAmount) / Convert.ToDouble(term);
-            }
+            loan.HistoryMinYear = loan.LoanHistory.Min(x => x.DatePaid.Year);
+            loan.HistoryMaxYear = loan.LoanHistory.Max(x => x.DatePaid.Year);
 
-            return Convert.ToDecimal(Math.Ceiling(mp * 100) / 100);
+            loan.LoanOutlook = loan.GetLoanOutlook();
+            loan.OutlookMinYear = loan.LoanOutlook.Min(x => x.Date.Year);
+            loan.OutlookMaxYear = loan.LoanOutlook.Max(x => x.Date.Year);
+
+            return loan;
         }
 
-        public static string GetClasses(this Loan loan)
+        private static IEnumerable<LoanOutlook> GetLoanOutlook(this Loan loan)
         {
-            string classes = "";
-            classes = (loan.IsPastDue) ? classes + "past-due " : classes;
-            classes = (loan.IsDueInTenDays) ? classes + "due-soon " : classes;
-            classes = classes.Trim();
+            List<LoanOutlook> outlook = new List<LoanOutlook>();
+            double principal = Convert.ToDouble(loan.Principal);
+            DateTime date = loan.LastPaidDate;
+            
+            double inte = Convert.ToDouble(loan.InterestRate);
+            if (loan.InterestCompMonthly)
+            {
+                inte = (inte / 100 / 12);
+            }
+            else if (loan.InterestCompDaily)
+            {
+                inte = (inte / 100 / 365);
+            }
 
-            return (classes != "") ? "style='" + classes + "'" : "";
+            while (principal > 0.00)
+            {
+                if (loan.InterestCompMonthly)
+                {
+                    date = date.AddMonths(1);
+                    double interest = Math.Ceiling(inte * Convert.ToDouble(principal) * 100) / 100;
+
+                    double baseAmount = Convert.ToDouble(loan.BasePayment) - interest;
+                    baseAmount = (baseAmount > principal) ? principal : baseAmount;
+                    principal -= baseAmount;
+
+                    double add = Convert.ToDouble(loan.AddPayment);
+                    add = (principal - add > 0) ? add : principal;
+                    principal -= add;
+
+                    if (principal <= 10)
+                    {
+                        add += principal;
+                        principal = 0.00;
+                    }
+
+                    LoanOutlook item = new LoanOutlook(date, Convert.ToDecimal(interest), Convert.ToDecimal(baseAmount), Convert.ToDecimal(add), loan.Escrow, Convert.ToDecimal(principal));
+                    outlook.Add(item);
+                }
+            }
+
+            return outlook.OrderBy(x => x.Date);
         }
     }
 
     public class LoanMeta
     {
         /* Not In Database */
-        [Display(Name = "Monthly Payment"), DisplayFormat(DataFormatString = "{0:c}")]
+        [Display(Name = "Payment"), DisplayFormat(DataFormatString = "{0:c}")]
         public object MonthlyPayment { get; set; }
 
-        [Display(Name = "Base Monthly Payment"), DisplayFormat(DataFormatString = "{0:c}")]
-        public object BaseMonthlyPayment { get; set; }
+        [Display(Name = "Base Payment"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object BasePayment { get; set; }
 
         [Display(Name = "Principal"), DisplayFormat(DataFormatString = "{0:c}")]
         public object Principal { get; set; }
 
-        [Display(Name = "Due Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        [Display(Name = "Due Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public object DueDate { get; set; }
 
         [Display(Name = "Past Due")]
         public object IsPastDue { get; set; }
 
-        [Display(Name = "Due In 10 Days")]
-        public object IsDueInTenDays { get; set; }
-
-        [Display(Name = "Last Paid Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        [Display(Name = "Last Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public object LastPaidDate { get; set; }
 
-        [Display(Name = "Last Paid Amount"), DisplayFormat(DataFormatString = "{0:c}")]
+        [Display(Name = "Last Amount"), DisplayFormat(DataFormatString = "{0:c}")]
         public object LastPaidAmount { get; set; }
 
-        [Display(Name = "Due In")]
+        [Display(Name = "Due In"), DisplayFormat(DataFormatString = "{0} Days")]
         public object DueInDays { get; set; }
+
+        [Display(Name = "Remaining"), DisplayFormat(DataFormatString = "{0} Months")]
+        public object PaymentsRemaining { get; set; }
 
         /* In Database */
         [Display(Name = "Add Payment"), DisplayFormat(DataFormatString = "{0:c}")]
@@ -125,7 +188,7 @@ namespace MyFinances.Models
         [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]
         public object Escrow { get; set; }
 
-        [Display(Name = "First Payment Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [Display(Name = "First Payment Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public object FirstPaymentDate { get; set; }
 
         [Display(Name = "Interest Rate"), DisplayFormat(DataFormatString = "{0:c}")]
@@ -146,7 +209,7 @@ namespace MyFinances.Models
         [Display(Name = "Is Active")]
         public object IsActive { get; set; }
 
-        [Display(Name = "Interest Compound Monthly")]
+        [Display(Name = "Interest Compound Daily")]
         public object InterestCompDaily { get; set; }
 
         [Display(Name = "Interest Compound Monthly")]

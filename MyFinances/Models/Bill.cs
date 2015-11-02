@@ -8,35 +8,79 @@ namespace MyFinances.Models
     [MetadataType(typeof(BillMeta))]
     public partial class Bill
     {
-        public void Load() {
-            LastPaidDate = BillHistories.OrderBy(x => x.DatePaid).Reverse().Select(x => x.DatePaid).FirstOrDefault();
-            LastPaidAmount = BillHistories.OrderBy(x => x.DatePaid).Reverse().Select(x => x.Amount).FirstOrDefault();
-            HistoryDiffPayee = BillHistories.Any(x => x.Payee != Payee);
-
-            List<BillHistoryAverage> avgList = new List<BillHistoryAverage>();
-
-            for (int i = 1; i <= 12; i++)
-            {
-                avgList.Add(new BillHistoryAverage(
-                    new DateTime((i < DateTime.Now.Month) ? DateTime.Now.Year + 1 : DateTime.Now.Year, i, 1),
-                    BillHistories.Where(x => x.DatePaid.Month == i).Average(x => x.Amount))
-                );
-            }
-
-            BillHistoryAverage = avgList;
-        }
-
-        public bool IsPastDue { get { return DueInDays < 0 && (DueDate - LastPaidDate).TotalDays >= 10; } }
-
         public DateTime LastPaidDate { get; set; }
 
         public decimal LastPaidAmount { get; set; }
 
-        public double DueInDays { get { return (DueDate - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).TotalDays; } }
-
         public bool HistoryDiffPayee { get; set; }
 
+        public decimal AveragePaid { get; set; }
+
+        public decimal MinPaid { get; set; }
+
+        public decimal MaxPaid { get; set; }
+
+        public int AverageDay { get; set; }
+
+        public int MinYear { get; set; }
+
+        public int MaxYear { get; set; }
+
+        public IEnumerable<BillHistory> BillHistory { get; set; }
+
         public IEnumerable<BillHistoryAverage> BillHistoryAverage { get; set; }
+
+        public bool IsPastDue { get { return DueInDays < 0 && ((DueDate - LastPaidDate).TotalDays >= 5 || (DueDate - LastPaidDate).TotalDays <= -5); } }
+
+        public double DueInDays { get { return (DueDate - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).TotalDays; } }
+    }
+
+    public static class BillExentions
+    {
+        public static IEnumerable<Bill> GetBills(this LinkToDBDataContext context)
+        {
+            IEnumerable<Bill> bills = context.Bills.Where(x => x.IsActive == true).OrderBy(x => x.DueDate).ToList();
+            foreach (Bill bill in bills)
+            {
+                bill.LoadBill();
+            }
+            return bills;
+        }
+
+        public static Bill GetBill(this LinkToDBDataContext context, int id)
+        {
+            Bill bill = context.Bills.FirstOrDefault(x => x.Id == id).LoadBill();
+            List<BillHistoryAverage> avgList = new List<BillHistoryAverage>();
+            for (int i = 1; i <= 12; i++)
+            {
+                IEnumerable<BillHistory> perMonth = bill.BillHistory.Where(x => x.DatePaid.Month == i);
+                BillHistoryAverage bha = new BillHistoryAverage(
+                    new DateTime((i < bill.DueDate.Month) ? bill.DueDate.Year + 1 : bill.DueDate.Year, i, 1),
+                    perMonth.Average(x => x.Amount),
+                    perMonth.Min(x => x.Amount),
+                    perMonth.Max(x => x.Amount),
+                    perMonth.Average(x => x.DatePaid.Day)
+                );
+                avgList.Add(bha);
+            }
+            bill.BillHistoryAverage = avgList.OrderBy(x => x.Month);
+            return bill;
+        }
+
+        private static Bill LoadBill(this Bill bill)
+        {
+            bill.BillHistory = bill.GetBillHistory();
+            bill.LastPaidDate = bill.BillHistory.OrderBy(x => x.DatePaid).Reverse().Select(x => x.DatePaid).FirstOrDefault();
+            bill.LastPaidAmount = bill.BillHistory.OrderBy(x => x.DatePaid).Reverse().Select(x => x.Amount).FirstOrDefault();
+            bill.HistoryDiffPayee = bill.BillHistory.Any(x => x.Payee != bill.Payee);
+            bill.AveragePaid = bill.BillHistory.Average(x => x.Amount);
+            bill.MinPaid = bill.BillHistory.Min(x => x.Amount);
+            bill.MaxPaid = bill.BillHistory.Max(x => x.Amount);
+            bill.AverageDay = Convert.ToInt16(Math.Ceiling(bill.BillHistory.Average(x => x.DatePaid.Day)));
+            bill.MinYear = bill.BillHistory.Min(x => x.DatePaid.Year);
+            bill.MaxYear = bill.BillHistory.Max(x => x.DatePaid.Year);
+            return bill;
+        }
     }
 
     public class BillMeta
@@ -45,23 +89,32 @@ namespace MyFinances.Models
         [Display(Name = "Past Due")]
         public object IsPastDue { get; set; }
 
-        [Display(Name = "Last Paid Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        [Display(Name = "Last Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public object LastPaidDate { get; set; }
 
-        [Display(Name = "Last Paid Amount"), DisplayFormat(DataFormatString = "{0:c}")]
+        [Display(Name = "Last Amount"), DisplayFormat(DataFormatString = "{0:c}")]
         public object LastPaidAmount { get; set; }
 
         [Display(Name = "Due In"), DisplayFormat(DataFormatString = "{0} Days")]
         public object DueInDays { get; set; }
 
+        [Display(Name = "Overal"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object AveragePaid { get; set; }
+
+        [Display(Name = "Minimum"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object MinPaid { get; set; }
+
+        [Display(Name = "Maximum"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object MaxPaid { get; set; }
+
         /* In Database */
         [Display(Name = "Name")]
         public object Name { get; set; }
 
-        [Display(Name = "Due Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Due Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true),  DataType(DataType.Date)]
         public object DueDate { get; set; }
 
-        [Display(Name = "Amount"), DisplayFormat(DataFormatString="{0:c}")]
+        [Display(Name = "Amount"), DisplayFormat(DataFormatString = "{0:c}")]
         public object Amount { get; set; }
 
         [Display(Name = "Payee")]
@@ -76,7 +129,7 @@ namespace MyFinances.Models
         [Display(Name = "Is Active")]
         public object IsActive { get; set; }
 
-        [Display(Name = "Issue Date"), DisplayFormat(DataFormatString="{0:dd/MM/yyyy}", ApplyFormatInEditMode=true)]
+        [Display(Name = "Issue Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
         public object IssueDate { get; set; }
 
         [Display(Name = "Shared")]
