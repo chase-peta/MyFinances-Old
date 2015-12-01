@@ -5,7 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewBag.Title</h2>
+<div class="clear-after">
+    <div class="pull-right">
+        @Html.ActionLink("Add Bill", "Add", null, new { @class = "btn btn-primary" })
+    </div>
+    <h2>@ViewBag.Title</h2>
+</div>
 
 <hr />
 
@@ -27,25 +32,14 @@
             <tbody>
                 @foreach (Bill item in Model)
                 {
-                    <tr>
+                    <tr class="@item.Classes">
                         <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "Edit", new { id = item.Id })</td>
                         <td class="visible-md visible-lg">@Html.DisplayFor(m => item.Payee)</td>
                         <td class="visible-sm visible-md visible-lg text-right">@Html.DisplayFor(m => item.LastPaidAmount)</td>
                         <td class="visible-sm visible-md visible-lg">@Html.DisplayFor(m => item.LastPaidDate)</td>
                         <td>@Html.DisplayFor(m => item.DueDate)</td>
-                        <td class="text-right">@Html.DisplayFor(model => item.Amount)</td>
-
-                        @if (item.IsPastDue) {
-                            <td>Past Due</td>
-                        } else if (item.DueInDays < 0) {
-                            <td>Paid</td>
-                        } else if (item.DueInDays == 0) {
-                            <td>Today</td>
-                        } else if (item.DueInDays == 1) {
-                            <td>Tomorrow</td>
-                        } else {
-                            <td>@Html.DisplayFor(m => item.DueInDays)</td>
-                        }
+                        <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
+                        <td>@Html.DisplayFor(m => item.DueIn)</td>
                     </tr>
                 }
             </tbody>

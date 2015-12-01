@@ -19,6 +19,54 @@ namespace MyFinances.Controllers
             }
         }
 
+        public ActionResult View(int id)
+        {
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                return View(context.GetBill(id));
+            }
+        }
+
+        public ActionResult Add()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Add(Bill collection)
+        {
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                try
+                {
+                    Bill bill = new Bill();
+                    bill.CreationDate = DateTime.Now;
+                    bill.ModifyDate = DateTime.Now;
+                    bill.Version = 1;
+                    bill.UserId = 1;
+                    bill.PaymentTypeId = 4;
+                    bill.IsActive = true;
+
+                    bill.Amount = collection.Amount;
+                    bill.DueDate = collection.DueDate;
+                    bill.IssueDate = collection.IssueDate;
+                    bill.Name = collection.Name;
+                    bill.Payee = collection.Payee;
+                    bill.Shared = collection.Shared;
+                    bill.StaysSame = collection.StaysSame;
+
+                    context.Bills.InsertOnSubmit(bill);
+                    context.SubmitChanges();
+
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(collection);
+                }
+            }
+        }
+
         public ActionResult Edit(int id)
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
@@ -90,24 +138,34 @@ namespace MyFinances.Controllers
                     history.ModifyDate = DateTime.Now;
                     history.Version = 1;
                     history.BillId = collection.Id;
+
+                    Bill bill = context.GetBill(history.BillId);
+                    history.Bill = bill;
+
                     history.Amount = collection.Amount;
                     history.DatePaid = collection.DatePaid;
                     history.Payee = collection.Payee;
                     history.PaymentTypeId = collection.PaymentTypeId;
                     history.IssueDate = collection.IssueDate;
-
-                    Bill bill = context.GetBill(history.BillId);
+                    
                     bill.BillHistories.Add(history);
 
-                    if (bill.StaysSame)
+                    if (bill.StaysSame || bill.BillHistoryAverage == null)
                     {
                         bill.DueDate = bill.DueDate.AddMonths(1);
                     }
                     else
                     {
-                        BillHistoryAverage bha = bill.BillHistoryAverage.FirstOrDefault(x => x.Month.Month == bill.DueDate.AddMonths(1).Month);
-                        bill.DueDate = bha.Month;
-                        bill.Amount = bha.Average;
+                        IEnumerable<BillHistoryAverage> bha = bill.BillHistoryAverage.Where(x => x.Month.Month == bill.DueDate.AddMonths(1).Month);
+                        if (bha.Any())
+                        {
+                            bill.DueDate = bha.FirstOrDefault().Month;
+                            bill.Amount = bha.FirstOrDefault().Average;
+                        }
+                        else
+                        {
+                            bill.DueDate = bill.DueDate.AddMonths(1);
+                        }
                     }
 
                     context.SubmitChanges();

@@ -32,7 +32,39 @@ namespace MyFinances.Models
 
         public double DueInDays { get { return (DueDate - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).TotalDays; } }
 
-        public int PaymentsRemaining { get { return LoanOutlook.Count(); } }
+        public string DueIn
+        {
+            get
+            {
+                if (IsPastDue)
+                    return "Past Due";
+                else if (DueInDays < 0)
+                    return "Paid";
+                else if (DueInDays == 0)
+                    return "Today";
+                else if (DueInDays == 1)
+                    return "Tomorrow";
+                else
+                    return DueInDays.ToString() + " Days";
+            }
+        }
+
+        public string Classes
+        {
+            get
+            {
+                if (IsPastDue)
+                    return "past-due";
+                else if (DueInDays < 0)
+                    return "paid";
+                else if (DueInDays < 5)
+                    return "due-soon";
+                else
+                    return "";
+            }
+        }
+
+        public int PaymentsRemaining { get; set; }
 
         public decimal MonthlyPayment
         {
@@ -99,13 +131,14 @@ namespace MyFinances.Models
             loan.HistoryMaxYear = loan.LoanHistory.Max(x => x.DatePaid.Year);
 
             loan.LoanOutlook = loan.GetLoanOutlook();
+            loan.PaymentsRemaining = loan.LoanOutlook.Count();
             loan.OutlookMinYear = loan.LoanOutlook.Min(x => x.Date.Year);
             loan.OutlookMaxYear = loan.LoanOutlook.Max(x => x.Date.Year);
 
             return loan;
         }
 
-        private static IEnumerable<LoanOutlook> GetLoanOutlook(this Loan loan)
+        public static IEnumerable<LoanOutlook> GetLoanOutlook(this Loan loan)
         {
             List<LoanOutlook> outlook = new List<LoanOutlook>();
             double principal = Convert.ToDouble(loan.Principal);
@@ -188,10 +221,10 @@ namespace MyFinances.Models
         [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]
         public object Escrow { get; set; }
 
-        [Display(Name = "First Payment Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "First Payment Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
         public object FirstPaymentDate { get; set; }
 
-        [Display(Name = "Interest Rate"), DisplayFormat(DataFormatString = "{0:c}")]
+        [Display(Name = "Interest Rate"), DisplayFormat(DataFormatString = "{0:0.0##}", ApplyFormatInEditMode = true)]
         public object InterestRate { get; set; }
 
         [Display(Name = "Loan Amount"), DisplayFormat(DataFormatString = "{0:c}")]

@@ -19,6 +19,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -130,6 +131,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Content\favicon.ico" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -177,6 +179,9 @@
     <Content Include="Views\Bills\EditPayment.cshtml" />
     <Content Include="Views\Bills\AddPayment.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Loans\AddPayment.cshtml" />
+    <Content Include="Views\Bills\Add.cshtml" />
+    <Content Include="Views\Bills\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

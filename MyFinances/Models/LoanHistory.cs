@@ -44,7 +44,7 @@ namespace MyFinances.Models
         [Display(Name = "Base"), DisplayFormat(DataFormatString = "{0:c}")]
         public object BasicPayment { get; set; }
 
-        [Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
         public object DatePaid { get; set; }
 
         [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]

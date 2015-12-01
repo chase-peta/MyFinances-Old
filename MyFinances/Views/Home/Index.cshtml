@@ -9,12 +9,46 @@
 
 <hr />
 
-@foreach (DashboardDateRange range in Model.DateRanges)
-{
-    <div>@range.StartDate</div>
-    <div>@range.EndDate</div>
-    foreach (DashboardItem item in range.Items)
+<div class="row">
+    @{ int count = 0; }
+    @foreach (DashboardDateRange range in Model.DateRanges)
     {
-        <div>@item.Name</div>
+        count += 1;
+        <div class="col-md-6">
+            <div class="tab-content" style="margin-bottom: 20px;">
+                <div style="background: #333; color: #fff; padding: 10px;"><strong><span>@Html.DisplayFor(x => range.StartDate)</span> - <span>@Html.DisplayFor(m => range.EndDate)</span>, @range.EndDate.Year</strong></div>
+                <div class="table-container">
+                    <table class="table table-striped" id="Dashboard-Table-@count">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%">@Html.DisplayNameFor(m => range.Items.First().Name)</th>
+                                <th>@Html.DisplayNameFor(m => range.Items.First().Date)</th>
+                                <th>@Html.DisplayNameFor(m => range.Items.First().DueInDays)</th>
+                                <th class="text-right">@Html.DisplayNameFor(m => range.Items.First().Amount)</th>
+                            </tr>
+                        </thead>
+                        @foreach (DashboardItem item in range.Items)
+                        {
+                            <tr class="@item.Classes">
+                                <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "Edit", item.Type + "s", new { id = item.Id }, null)</td>
+                                <td>@Html.DisplayFor(m => item.Date)</td>
+                                <td>@Html.DisplayFor(m => item.DueIn)</td>
+                                <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
+                            </tr>
+                        }
+                        <tfoot>
+                            <tr>
+                                <th class="text-right" colspan="2">@Html.DisplayNameFor(x => range.LeftToPay): <span class="total">@Html.DisplayFor(x => range.LeftToPay)</span></th>
+                                <th class="text-right" colspan="2">@Html.DisplayNameFor(x => range.Total): <span class="total">@Html.DisplayFor(x => range.Total)</span></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        if (count % 2 == 0)
+        {
+            <div class="clearfix"></div>
+        }
     }
-}
+</div>
