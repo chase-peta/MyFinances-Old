@@ -5,7 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewBag.Title</h2>
+<div class="clear-after">
+    <div class="pull-right">
+        @Html.ActionLink("Add Loan", "Add", null, new { @class = "btn btn-primary" })
+    </div>
+    <h2>@ViewBag.Title</h2>
+</div>
 
 <hr />
 

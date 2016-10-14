@@ -114,6 +114,7 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\canvasjs.min.js" />
     <Content Include="Scripts\dataTables.bootstrap.js" />
     <Content Include="Scripts\dataTables.bootstrap.min.js" />
     <Content Include="Scripts\dataTables.foundation.js" />
@@ -182,6 +183,8 @@
     <Content Include="Views\Loans\AddPayment.cshtml" />
     <Content Include="Views\Bills\Add.cshtml" />
     <Content Include="Views\Bills\View.cshtml" />
+    <Content Include="Views\Loans\View.cshtml" />
+    <Content Include="Views\Loans\Add.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

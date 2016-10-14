@@ -33,7 +33,7 @@
                 @foreach (Bill item in Model)
                 {
                     <tr class="@item.Classes">
-                        <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "Edit", new { id = item.Id })</td>
+                        <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", new { id = item.Id })</td>
                         <td class="visible-md visible-lg">@Html.DisplayFor(m => item.Payee)</td>
                         <td class="visible-sm visible-md visible-lg text-right">@Html.DisplayFor(m => item.LastPaidAmount)</td>
                         <td class="visible-sm visible-md visible-lg">@Html.DisplayFor(m => item.LastPaidDate)</td>

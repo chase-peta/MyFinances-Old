@@ -1,0 +1,185 @@
+﻿@model Loan
+
+@{
+    ViewBag.Title = Model.Name + " Loan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="clear-after">
+    <div class="pull-right">
+        @Html.ActionLink("Back to all Loans", "Index", null, new { @class = "btn btn-primary" })
+    </div>
+    <h2>@ViewBag.Title</h2>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-xs-12 col-sm-4">
+        <div class="clear-after">
+            <div class="pull-right">
+                @Html.ActionLink("Add Payment", "AddPayment", new { id = Model.Id }, new { @class = "btn btn-primary margin-up" })
+                @Html.ActionLink("Edit Loan", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary margin-up" })
+            </div>
+            <h3>View Loan</h3>
+        </div>
+
+        <div class="details">
+            <div class="tab-content">
+                <div class="table-container">
+
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.FirstPaymentDate)</th>
+                                <td>@Html.DisplayFor(model => model.FirstPaymentDate)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.LoanAmount)</th>
+                                <td>@Html.DisplayFor(model => model.LoanAmount)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.InterestRate)</th>
+                                <td>@Html.DisplayFor(model => model.InterestRate)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Term)</th>
+                                <td>@Html.DisplayFor(model => model.Term)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.AddPayment)</th>
+                                <td>@Html.DisplayFor(model => model.AddPayment)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Escrow)</th>
+                                <td>@Html.DisplayFor(model => model.Escrow)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-8">
+        <div id="LoanTabs">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="@(!@ViewBag.Calculate ? "active" : "")"><a href="#loanPaymentHistory" aria-controls="loanPaymentHistory" role="tab" data-toggle="tab" class="btn-md">Payment History</a></li>
+                <li role="presentation" class="@(@ViewBag.Calculate ? "active" : "")"><a href="#loanPaymentOutlook" aria-controls="loanPaymentOutlook" role="tab" data-toggle="tab" class="btn-md">Payment Outlook</a></li>
+            </ul>
+
+            <div class="tab-content">
+
+                <div role="tabpanel" class="tab-pane fade in @(!@ViewBag.Calculate ? "active" : "")" id="loanPaymentHistory">
+                    <div class="table-container border-bottom-ddd">
+                        <table class="table table-striped hidden-on-load" id="LoanPaymentHistoryTable">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(m => m.LoanHistory.First().DatePaid)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanHistory.First().Interest)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanHistory.First().Escrow)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanHistory.First().BasicPayment)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanHistory.First().AddPayment)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanHistory.First().Payment)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanHistory.First().Principal)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.LoanHistory)
+                                {
+                                    <tr>
+                                        <td data-search="@item.DatePaid.Year" data-order="@((item.DatePaid - new DateTime(2000, 1, 1)).Days)">
+                                            @Html.ActionLink(item.DatePaid.ToString("MMMM - dd"), "EditPayment", new { id = item.Id })
+                                        </td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.Interest)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.Escrow)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.BasicPayment)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.AddPayment)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.Payment)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.Principal)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total:</th>
+                                    <th class="interestTotal text-right"></th>
+                                    <th class="escrowTotal text-right"></th>
+                                    <th class="baseTotal text-right"></th>
+                                    <th class="addTotal text-right"></th>
+                                    <th class="paymentTotal text-right"></th>
+                                    <th class="total text-right"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="text-center">
+                        <ul class="pagination">
+                            @for (int i = Model.HistoryMaxYear; i >= Model.HistoryMinYear; i--)
+                            {
+                                <li><a href="#" data-year="@i">@i</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane fade in  @(@ViewBag.Calculate ? "active" : "")" id="loanPaymentOutlook">
+                    <div class="table-container border-bottom-ddd">
+                        <table class="table table-striped hidden-on-load" id="LoanPaymentOutlookTable">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(m => m.LoanOutlook.First().Date)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanOutlook.First().InterestAmount)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanOutlook.First().EscrowAmount)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanOutlook.First().BaseAmount)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanOutlook.First().AddAmount)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanOutlook.First().Payment)</th>
+                                    <th class="text-right">@Html.DisplayNameFor(m => m.LoanOutlook.First().Principal)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.LoanOutlook)
+                                {
+                                    <tr>
+                                        <td data-search="@item.Date.Year" data-order="@((item.Date - new DateTime(2000, 1, 1)).Days)">
+                                            @item.Date.ToString("MMMM - dd")
+                                        </td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.InterestAmount)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.EscrowAmount)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.BaseAmount)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.AddAmount)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.Payment)</td>
+                                        <td class="text-right">@Html.DisplayFor(m => item.Principal)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total:</th>
+                                    <th class="interestTotal text-right"></th>
+                                    <th class="escrowTotal text-right"></th>
+                                    <th class="baseTotal text-right"></th>
+                                    <th class="addTotal text-right"></th>
+                                    <th class="paymentTotal text-right"></th>
+                                    <th class="total text-right"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="text-center">
+                        <ul class="pagination">
+                            @for (int i = Model.OutlookMinYear; i <= Model.OutlookMaxYear; i++)
+                            {
+                                <li><a href="#" data-year="@i">@i</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -19,6 +19,57 @@ namespace MyFinances.Controllers
             }
         }
 
+        public ActionResult View(int id)
+        {
+            ViewBag.Calculate = false;
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                return View(context.GetLoan(id));
+            }
+        }
+
+        public ActionResult Add ()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Add (Loan collection)
+        {
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                try
+                {
+                    Loan loan = new Loan();
+                    loan.CreationDate = DateTime.Now;
+                    loan.ModifyDate = DateTime.Now;
+                    loan.Version = 1;
+                    loan.UserId = 1;
+                    loan.PaymentTypeId = 4;
+                    loan.IsActive = true;
+
+                    loan.Name = collection.Name;
+                    loan.FirstPaymentDate = collection.FirstPaymentDate;
+                    loan.LoanAmount = collection.LoanAmount;
+                    loan.InterestRate = collection.InterestRate;
+                    loan.Term = collection.Term;
+                    loan.AddPayment = collection.AddPayment;
+                    loan.Escrow = collection.Escrow;
+                    loan.InterestCompDaily = false;
+                    loan.InterestCompMonthly = true;
+
+                    context.Loans.InsertOnSubmit(loan);
+                    context.SubmitChanges();
+
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(collection);
+                }
+            }
+        }
+
         public ActionResult Edit(int id)
         {
             ViewBag.Calculate = false;

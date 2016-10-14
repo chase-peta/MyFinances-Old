@@ -35,5 +35,3 @@ C:\OneDrive\Sites\MyFinances\MyFinances\obj\Debug\MyFinances.dll
 C:\OneDrive\Sites\MyFinances\MyFinances\obj\Debug\MyFinances.pdb
 C:\OneDrive\Sites\MyFinances\MyFinances\obj\Debug\MyFinances.csprojResolveAssemblyReference.cache
 C:\OneDrive\Sites\MyFinances\MyFinances\bin\MyFinances.dll.config
-C:\OneDrive\Sites\MyFinances\MyFinances\bin\MyFinances.dll.CodeAnalysisLog.xml
-C:\OneDrive\Sites\MyFinances\MyFinances\bin\MyFinances.dll.lastcodeanalysissucceeded

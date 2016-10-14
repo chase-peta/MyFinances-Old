@@ -143,7 +143,7 @@ namespace MyFinances.Models
             List<LoanOutlook> outlook = new List<LoanOutlook>();
             double principal = Convert.ToDouble(loan.Principal);
             DateTime date = loan.LastPaidDate;
-            
+
             double inte = Convert.ToDouble(loan.InterestRate);
             if (loan.InterestCompMonthly)
             {
@@ -151,7 +151,7 @@ namespace MyFinances.Models
             }
             else if (loan.InterestCompDaily)
             {
-                inte = (inte / 100 / 365);
+                inte = (inte / 100 / (DateTime.IsLeapYear(loan.LastPaidDate.Year) ? 366 : 365));
             }
 
             while (principal > 0.00)
@@ -160,6 +160,49 @@ namespace MyFinances.Models
                 {
                     date = date.AddMonths(1);
                     double interest = Math.Ceiling(inte * Convert.ToDouble(principal) * 100) / 100;
+
+                    double baseAmount = Convert.ToDouble(loan.BasePayment) - interest;
+                    baseAmount = (baseAmount > principal) ? principal : baseAmount;
+                    principal -= baseAmount;
+
+                    double add = Convert.ToDouble(loan.AddPayment);
+                    add = (principal - add > 0) ? add : principal;
+                    principal -= add;
+
+                    if (principal <= 10)
+                    {
+                        add += principal;
+                        principal = 0.00;
+                    }
+
+                    LoanOutlook item = new LoanOutlook(date, Convert.ToDecimal(interest), Convert.ToDecimal(baseAmount), Convert.ToDecimal(add), loan.Escrow, Convert.ToDecimal(principal));
+                    outlook.Add(item);
+                }
+                else
+                {
+                    DateTime lastDate = date;
+                    date = date.AddMonths(1);
+                    date = new DateTime(date.Year, date.Month, loan.FirstPaymentDate.Day);
+                    if (date.DayOfWeek == DayOfWeek.Saturday)
+                    {
+                        date = date.AddDays(2);
+                    }
+                    else if (date.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        date = date.AddDays(1);
+                    }
+                    double interest = 0.0;
+                    if (lastDate.Year == date.Year)
+                    {
+                        interest = inte * Convert.ToDouble(principal) * (date - lastDate).TotalDays;
+                    }
+                    else
+                    {
+                        interest = inte * Convert.ToDouble(principal) * (new DateTime(lastDate.Year, 12, 31) - lastDate).TotalDays;
+                        inte = (Convert.ToDouble(loan.InterestRate) / 100 / (DateTime.IsLeapYear(date.Year) ? 366 : 365));
+                        interest += inte * Convert.ToDouble(principal) * (date - new DateTime(date.Year, 1, 1)).TotalDays;
+                    }
+                    interest = Math.Ceiling(interest * 100) / 100;
 
                     double baseAmount = Convert.ToDouble(loan.BasePayment) - interest;
                     baseAmount = (baseAmount > principal) ? principal : baseAmount;

@@ -37,8 +37,6 @@
     }
 
     function loadBillPaymentHistoryTable() {
-        var selectedYear = false;
-
         if (!$.fn.DataTable.isDataTable("#BillPaymentHistoryTable")) {
             $billPaymentHistoryTable = $billPaymentHistoryTable.DataTable({
                 info: false,
@@ -185,5 +183,33 @@
             calculateNewBalance();
         });
     }
+
+    $('.nav-tabs > li > a').on('click', function (e) {
+        var target = $(this).attr('href');
+        if (target.indexOf('gragh') > -1) {
+            var chartNumber = $(this).attr('data-chart-number') - 1;
+            if (charts[chartNumber].loaded == false) {
+                setTimeout(function () {
+                    var chart = new CanvasJS.Chart(charts[chartNumber].chartName, {
+                        theme: "theme3",
+                        animationEnabled: true,
+                        animationDuration: 500,
+                        data: [
+                            {
+                                type: "pie",
+                                showInLegend: false,
+                                toolTipContent: "{y} - #percent %",
+                                yValueFormatString: "$#0.00",
+                                legendText: "{indexLabel}",
+                                dataPoints: charts[chartNumber].data
+                            }
+                        ]
+                    });
+                    chart.render();
+                    charts[chartNumber].loaded = true;
+                }, 250);
+            }
+        }
+    });
 
 });

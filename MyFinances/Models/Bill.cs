@@ -178,5 +178,11 @@ namespace MyFinances.Models
 
         [Display(Name = "Shared")]
         public object Shared { get; set; }
+
+        [Display(Name = "Created On"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd h:mm tt}")]
+        public object CreationDate { get; set; }
+
+        [Display(Name = "Modified On"), DisplayFormat(DataFormatString = "{0:yyy-MM-dd h:mm tt}")]
+        public object ModifyDate { get; set; }
     }
 }

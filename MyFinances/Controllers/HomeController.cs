@@ -21,6 +21,7 @@ namespace MyFinances.Controllers
                 foreach (Loan loan in loans) { startDate = (loan.DueDate <= startDate) ? loan.DueDate : startDate; }
                 if (startDate.Day > 1)
                 {
+                    //startDate = startDate.AddMonths(-1);
                     startDate = new DateTime(startDate.Year, startDate.Month, 1);
                 }
 
@@ -118,7 +119,7 @@ namespace MyFinances.Controllers
             DateTime endDate = GetEndDate(startDate);
 
             List<DashboardDateRange> dateRanges = new List<DashboardDateRange>();
-            for (int i = 1; i <= 4; i++)
+            for (int i = 1; i <= 6; i++)
             {
                 dateRanges.Add(new DashboardDateRange(
                     startDate,

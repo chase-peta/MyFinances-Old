@@ -215,5 +215,47 @@ namespace MyFinances.Controllers
                 }
             }
         }
+
+        public ActionResult Paid (int id)
+        {
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                BillHistory history = new BillHistory();
+                history.CreationDate = DateTime.Now;
+                history.ModifyDate = DateTime.Now;
+                history.Version = 1;
+                history.BillId = id;
+
+                Bill bill = context.GetBill(id);
+
+                history.Amount = bill.Amount;
+                history.DatePaid = bill.DueDate;
+                history.Payee = bill.Payee;
+                history.PaymentTypeId = bill.PaymentTypeId;
+                history.IssueDate = bill.IssueDate;
+                history.Bill = bill;
+
+                if (bill.StaysSame || bill.BillHistoryAverage == null)
+                {
+                    bill.DueDate = bill.DueDate.AddMonths(1);
+                }
+                else
+                {
+                    IEnumerable<BillHistoryAverage> bha = bill.BillHistoryAverage.Where(x => x.Month.Month == bill.DueDate.AddMonths(1).Month);
+                    if (bha.Any())
+                    {
+                        bill.DueDate = bha.FirstOrDefault().Month;
+                        bill.Amount = bha.FirstOrDefault().Average;
+                    }
+                    else
+                    {
+                        bill.DueDate = bill.DueDate.AddMonths(1);
+                    }
+                }
+
+                context.SubmitChanges();
+                return RedirectToAction("Index", "Home", null);
+            }
+        }
 	}
 }
