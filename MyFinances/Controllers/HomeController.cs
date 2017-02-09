@@ -44,7 +44,6 @@ namespace MyFinances.Controllers
                                 {
                                     DashboardItem item = new DashboardItem(bill);
                                     item.Date = date;
-                                    item.IsPastDue = item.DueInDays < 0;
                                     items.Add(item);
                                 }
                             }

@@ -26,6 +26,23 @@ namespace MyFinances.Models
             }
             return loanHistory;
         }
+
+        public static IEnumerable<LoanHistory> GetAllLoanHistory (this LinkToDBDataContext context, int year = 0)
+        {
+            if (year > 0)
+            {
+                return context.LoanHistories.Where(x => x.DatePaid.Year == year).OrderBy(x => x.DatePaid).ToList();
+            }
+            else
+            {
+                return context.LoanHistories.OrderBy(x => x.DatePaid).ToList();
+            }
+        }
+
+        public static LoanHistory GetLoanHistoryItem (this LinkToDBDataContext context, int id)
+        {
+            return context.LoanHistories.FirstOrDefault(x => x.Id == id);
+        }
     }
 
     public class LoanHistoryMeta

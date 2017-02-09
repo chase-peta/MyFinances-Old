@@ -6,7 +6,7 @@
     padding-right: 15px;
 }
 
-header,
+header .container-fluid,
 .body-content,
 footer {
     max-width: 1600px;

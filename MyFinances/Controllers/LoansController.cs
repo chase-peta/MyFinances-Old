@@ -28,13 +28,13 @@ namespace MyFinances.Controllers
             }
         }
 
-        public ActionResult Add ()
+        public ActionResult Add()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult Add (Loan collection)
+        public ActionResult Add(Loan collection)
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
@@ -52,6 +52,7 @@ namespace MyFinances.Controllers
                     loan.FirstPaymentDate = collection.FirstPaymentDate;
                     loan.LoanAmount = collection.LoanAmount;
                     loan.InterestRate = collection.InterestRate;
+                    loan.PaymentInterestRate = collection.PaymentInterestRate;
                     loan.Term = collection.Term;
                     loan.AddPayment = collection.AddPayment;
                     loan.Escrow = collection.Escrow;
@@ -95,6 +96,7 @@ namespace MyFinances.Controllers
                     loan.FirstPaymentDate = collection.FirstPaymentDate;
                     loan.LoanAmount = collection.LoanAmount;
                     loan.InterestRate = collection.InterestRate;
+                    loan.PaymentInterestRate = collection.PaymentInterestRate;
                     loan.Term = collection.Term;
                     loan.AddPayment = collection.AddPayment;
                     loan.Escrow = collection.Escrow;
@@ -167,7 +169,7 @@ namespace MyFinances.Controllers
 
                     context.SubmitChanges();
 
-                    return RedirectToAction("Edit", new { id = history.LoanId });
+                    return RedirectToAction("View", new { id = history.LoanId });
                 }
                 catch
                 {
@@ -180,31 +182,33 @@ namespace MyFinances.Controllers
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                BillHistory history = context.GetBillHistoryItem(id);
-                history.Bill = context.GetBill(history.BillId);
+                LoanHistory history = context.GetLoanHistoryItem(id);
+                history.Loan = context.GetLoan(history.LoanId);
                 return View(history);
             }
         }
 
         [HttpPost]
-        public ActionResult EditPayment(BillHistory collection)
+        public ActionResult EditPayment(LoanHistory collection)
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                BillHistory history = context.GetBillHistoryItem(collection.Id);
+                LoanHistory history = context.GetLoanHistoryItem(collection.Id);
 
                 try
                 {
                     history.ModifyDate = DateTime.Now;
                     history.Version += 1;
                     history.DatePaid = collection.DatePaid;
-                    history.Amount = collection.Amount;
-                    history.Payee = collection.Payee;
-                    history.IssueDate = collection.IssueDate;
+                    history.BasicPayment = collection.BasicPayment;
+                    history.AddPayment = collection.AddPayment;
+                    history.Interest = collection.Interest;
+                    history.Escrow = collection.Escrow;
+                    history.PaymentTypeId = collection.PaymentTypeId;
 
                     context.SubmitChanges();
 
-                    return RedirectToAction("Edit", new { id = history.BillId });
+                    return RedirectToAction("View", new { id = history.LoanId });
                 }
                 catch
                 {

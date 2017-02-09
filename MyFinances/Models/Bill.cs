@@ -69,9 +69,9 @@ namespace MyFinances.Models
 
     public static class BillExentions
     {
-        public static IEnumerable<Bill> GetBills(this LinkToDBDataContext context)
+        public static IEnumerable<Bill> GetBills(this LinkToDBDataContext context, bool checkIsActive = true)
         {
-            IEnumerable<Bill> bills = context.Bills.Where(x => x.IsActive == true).OrderBy(x => x.DueDate).ToList();
+            IEnumerable<Bill> bills = (checkIsActive) ? context.Bills.Where(x => x.IsActive == true).OrderBy(x => x.DueDate).ToList() : context.Bills.OrderBy(x => x.DueDate).ToList();
             foreach (Bill bill in bills)
             {
                 bill.LoadBill();

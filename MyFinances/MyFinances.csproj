@@ -141,6 +141,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Business\Extentions.cs" />
     <Compile Include="Controllers\BillsController.cs" />
+    <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoansController.cs" />
     <Compile Include="Global.asax.cs">
@@ -185,6 +186,8 @@
     <Content Include="Views\Bills\View.cshtml" />
     <Content Include="Views\Loans\View.cshtml" />
     <Content Include="Views\Loans\Add.cshtml" />
+    <Content Include="Views\Loans\EditPayment.cshtml" />
+    <Content Include="Views\History\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

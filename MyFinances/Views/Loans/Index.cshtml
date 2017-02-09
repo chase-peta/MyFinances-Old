@@ -36,7 +36,7 @@
                 @foreach (Loan item in Model)
                 {
                     <tr class="@item.Classes">
-                        <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "Edit", new { id = item.Id })</td>
+                        <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", new { id = item.Id })</td>
                         <td class="text-right">@Html.DisplayFor(m => item.Principal)</td>
                         <td class="visible-md visible-lg text-right">@Html.DisplayFor(m => item.PaymentsRemaining)</td>
                         <td class="visible-sm visible-md visible-lg text-right">@Html.DisplayFor(m => item.LastPaidAmount)</td>

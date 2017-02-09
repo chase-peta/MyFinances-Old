@@ -170,7 +170,7 @@ namespace MyFinances.Controllers
 
                     context.SubmitChanges();
 
-                    return RedirectToAction("Edit", new { id = history.BillId });
+                    return RedirectToAction("View", new { id = history.BillId });
                 }
                 catch
                 {
@@ -207,7 +207,7 @@ namespace MyFinances.Controllers
                     
                     context.SubmitChanges();
 
-                    return RedirectToAction("Edit", new { id = history.BillId });
+                    return RedirectToAction("View", new { id = history.BillId });
                 }
                 catch
                 {
@@ -241,7 +241,8 @@ namespace MyFinances.Controllers
                 }
                 else
                 {
-                    IEnumerable<BillHistoryAverage> bha = bill.BillHistoryAverage.Where(x => x.Month.Month == bill.DueDate.AddMonths(1).Month);
+                    DateTime useDate = bill.DueDate;
+                    IEnumerable<BillHistoryAverage> bha = bill.BillHistoryAverage.Where(x => x.Month.Month == useDate.AddMonths(1).Month);
                     if (bha.Any())
                     {
                         bill.DueDate = bha.FirstOrDefault().Month;

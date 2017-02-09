@@ -20,7 +20,7 @@ namespace MyFinances.Models
 
         public DateTime DueDate { get { return LastPaidDate.AddMonths(1); } }
 
-        public bool IsPastDue { get { return DueInDays < 0; } }
+        public bool IsPastDue { get { return DueInDays < 0 && ((DueDate - LastPaidDate).TotalDays >= 5 || (DueDate - LastPaidDate).TotalDays <= -5); } }
 
         public int HistoryMinYear { get; set; }
 
@@ -80,17 +80,30 @@ namespace MyFinances.Models
             {
                 double mp = 0.0;
 
-                if (InterestRate > 0)
+                if (PaymentInterestRate > 0 || InterestRate > 0)
                 {
-                    double rate = (Convert.ToDouble(InterestRate) / 100) / 12;
+                    //double rate = 0.001805; // Car Loan
+                    //double rate = 0.006663; // Person Loan
+                    double rate = 0.0;
+                    if (PaymentInterestRate > 0)
+                    {
+                        rate = (Convert.ToDouble(PaymentInterestRate) / 100) / 12;
+                    }
+                    else
+                    {
+                        rate = (Convert.ToDouble(InterestRate) / 100) / 12;
+                    }
                     double factor = (rate + (rate / (Math.Pow(rate + 1, Term) - 1)));
                     mp = Convert.ToDouble(LoanAmount) * factor;
+                }
+                else if(InterestRate > 0)
+                {
+
                 }
                 else
                 {
                     mp = Convert.ToDouble(LoanAmount) / Convert.ToDouble(Term);
                 }
-
                 return Convert.ToDecimal(Math.Ceiling(mp * 100) / 100);
             }
         }
@@ -98,9 +111,9 @@ namespace MyFinances.Models
 
     public static class LoanExentions
     {
-        public static IEnumerable<Loan> GetLoans(this LinkToDBDataContext context)
+        public static IEnumerable<Loan> GetLoans(this LinkToDBDataContext context, bool checkIsActive = true)
         {
-            IEnumerable<Loan> loans = context.Loans.Where(x => x.IsActive == true).ToList();
+            IEnumerable<Loan> loans = (checkIsActive) ? context.Loans.Where(x => x.IsActive == true).ToList() : context.Loans.ToList();
             foreach (Loan loan in loans)
             {
                 loan.LoadLoan();
@@ -127,13 +140,19 @@ namespace MyFinances.Models
                 loan.LastPaidAmount = lastHistory.Payment;
                 loan.Principal = lastHistory.Principal;
             }
-            loan.HistoryMinYear = loan.LoanHistory.Min(x => x.DatePaid.Year);
-            loan.HistoryMaxYear = loan.LoanHistory.Max(x => x.DatePaid.Year);
+            if (loan.LoanHistory.Count() > 0)
+            {
+                loan.HistoryMinYear = loan.LoanHistory.Min(x => x.DatePaid.Year);
+                loan.HistoryMaxYear = loan.LoanHistory.Max(x => x.DatePaid.Year);
+            }
 
-            loan.LoanOutlook = loan.GetLoanOutlook();
-            loan.PaymentsRemaining = loan.LoanOutlook.Count();
-            loan.OutlookMinYear = loan.LoanOutlook.Min(x => x.Date.Year);
-            loan.OutlookMaxYear = loan.LoanOutlook.Max(x => x.Date.Year);
+            if (loan.IsActive)
+            {
+                loan.LoanOutlook = loan.GetLoanOutlook();
+                loan.PaymentsRemaining = loan.LoanOutlook.Count();
+                loan.OutlookMinYear = loan.LoanOutlook.Min(x => x.Date.Year);
+                loan.OutlookMaxYear = loan.LoanOutlook.Max(x => x.Date.Year);
+            }
 
             return loan;
         }
@@ -159,7 +178,7 @@ namespace MyFinances.Models
                 if (loan.InterestCompMonthly)
                 {
                     date = date.AddMonths(1);
-                    double interest = Math.Ceiling(inte * Convert.ToDouble(principal) * 100) / 100;
+                    double interest = Math.Round(inte * Convert.ToDouble(principal), 2);
 
                     double baseAmount = Convert.ToDouble(loan.BasePayment) - interest;
                     baseAmount = (baseAmount > principal) ? principal : baseAmount;
@@ -194,15 +213,15 @@ namespace MyFinances.Models
                     double interest = 0.0;
                     if (lastDate.Year == date.Year)
                     {
-                        interest = inte * Convert.ToDouble(principal) * (date - lastDate).TotalDays;
+                        interest = inte * Convert.ToDouble(principal) * ((date - lastDate).TotalDays);
                     }
                     else
                     {
-                        interest = inte * Convert.ToDouble(principal) * (new DateTime(lastDate.Year, 12, 31) - lastDate).TotalDays;
+                        interest = inte * Convert.ToDouble(principal) * ((new DateTime(lastDate.Year, 12, 31) - lastDate).TotalDays + 0.5);
                         inte = (Convert.ToDouble(loan.InterestRate) / 100 / (DateTime.IsLeapYear(date.Year) ? 366 : 365));
-                        interest += inte * Convert.ToDouble(principal) * (date - new DateTime(date.Year, 1, 1)).TotalDays;
+                        interest += inte * Convert.ToDouble(principal) * ((date - new DateTime(date.Year, 1, 1)).TotalDays + 0.5);
                     }
-                    interest = Math.Ceiling(interest * 100) / 100;
+                    interest = Math.Floor(interest * 100) / 100;
 
                     double baseAmount = Convert.ToDouble(loan.BasePayment) - interest;
                     baseAmount = (baseAmount > principal) ? principal : baseAmount;
@@ -269,6 +288,9 @@ namespace MyFinances.Models
 
         [Display(Name = "Interest Rate"), DisplayFormat(DataFormatString = "{0:0.0##}", ApplyFormatInEditMode = true)]
         public object InterestRate { get; set; }
+
+        [Display(Name = "Payment Interest Rate"), DisplayFormat(DataFormatString = "{0:0.0##}", ApplyFormatInEditMode = true)]
+        public object PaymentInterestRate { get; set; }
 
         [Display(Name = "Loan Amount"), DisplayFormat(DataFormatString = "{0:c}")]
         public object LoanAmount { get; set; }

@@ -13,7 +13,6 @@ namespace MyFinances.Models
             Name = bill.Name;
             Date = bill.DueDate;
             Amount = bill.Amount;
-            IsPastDue = DueInDays < 0;
             IsShared = bill.Shared;
             Type = "Bill";
             IsPaid = false;
@@ -25,7 +24,6 @@ namespace MyFinances.Models
             Name = history.Bill.Name;
             Date = history.DatePaid;
             Amount = history.Amount;
-            IsPastDue = false;
             IsShared = history.Bill.Shared;
             Type = "Bill";
             IsPaid = true;
@@ -35,21 +33,8 @@ namespace MyFinances.Models
         {
             Date = bha.Month;
             Amount = bha.Average;
-            IsPastDue = false;
             IsShared = false;
             Type = "Bill";
-            IsPaid = false;
-        }
-
-        public DashboardItem (Loan loan)
-        {
-            Id = loan.Id;
-            Name = loan.Name;
-            Date = loan.DueDate;
-            Amount = loan.MonthlyPayment;
-            IsPastDue = loan.IsPastDue;
-            IsShared = false;
-            Type = "Loan";
             IsPaid = false;
         }
 
@@ -59,7 +44,6 @@ namespace MyFinances.Models
             Name = history.Loan.Name;
             Date = history.DatePaid;
             Amount = history.Payment;
-            IsPastDue = false;
             IsShared = false;
             Type = "Loan";
             IsPaid = true;
@@ -69,7 +53,6 @@ namespace MyFinances.Models
         {
             Date = loanOutlook.Date;
             Amount = loanOutlook.AddAmount + loanOutlook.BaseAmount + loanOutlook.EscrowAmount + loanOutlook.InterestAmount;
-            IsPastDue = (Date < DateTime.Now);
             IsShared = false;
             Type = "Loan";
             IsPaid = false;
@@ -126,7 +109,7 @@ namespace MyFinances.Models
             }
         }
 
-        public bool IsPastDue { get; set; }
+        public bool IsPastDue { get { return DueInDays < 0; } }
 
         public bool IsShared { get; set; }
 

@@ -15,22 +15,23 @@ namespace MyFinances.Models
     {
         public static IEnumerable<BillHistory> GetBillHistory(this Bill bill)
         {
-            IEnumerable<BillHistory> billHistory = bill.BillHistories.OrderBy(x => x.DatePaid).Reverse().ToList();
-            foreach (BillHistory history in billHistory)
+            return bill.BillHistories.OrderBy(x => x.DatePaid).Reverse().ToList();
+        }
+
+        public static IEnumerable<BillHistory> GetAllBillHistory(this LinkToDBDataContext context, int year = 0)
+        {
+            if (year > 0)
             {
-                history.LoadBillHistory();
+                return context.BillHistories.Where(x => x.DatePaid.Year == year).OrderBy(x => x.DatePaid).ToList();
+            } else
+            {
+                return context.BillHistories.OrderBy(x => x.DatePaid).ToList();
             }
-            return billHistory;
         }
 
         public static BillHistory GetBillHistoryItem(this LinkToDBDataContext context, int id)
         {
             return context.BillHistories.FirstOrDefault(x => x.Id == id);
-        }
-
-        private static BillHistory LoadBillHistory(this BillHistory history)
-        {
-            return history;
         }
     }
 

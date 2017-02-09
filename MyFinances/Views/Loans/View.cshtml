@@ -42,21 +42,66 @@
                                 <th>@Html.DisplayNameFor(model => model.InterestRate)</th>
                                 <td>@Html.DisplayFor(model => model.InterestRate)</td>
                             </tr>
+                            @if (Model.PaymentInterestRate > 0)
+                            {
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.PaymentInterestRate)</th>
+                                    <td>@Html.DisplayFor(model => model.PaymentInterestRate)</td>
+                                </tr>
+                            }
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Term)</th>
                                 <td>@Html.DisplayFor(model => model.Term)</td>
                             </tr>
-                            <tr>
-                                <th>@Html.DisplayNameFor(model => model.AddPayment)</th>
-                                <td>@Html.DisplayFor(model => model.AddPayment)</td>
-                            </tr>
-                            <tr>
-                                <th>@Html.DisplayNameFor(model => model.Escrow)</th>
-                                <td>@Html.DisplayFor(model => model.Escrow)</td>
-                            </tr>
+                            @if (Model.AddPayment > 0)
+                            {
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.AddPayment)</th>
+                                    <td>@Html.DisplayFor(model => model.AddPayment)</td>
+                                </tr>
+                            }
+                            @if (Model.Escrow > 0)
+                            {
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Escrow)</th>
+                                    <td>@Html.DisplayFor(model => model.Escrow)</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
 
+                </div>
+            </div>
+
+            <h4>Payment Info</h4>
+            <div class="tab-content">
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.MonthlyPayment)</th>
+                                <td>@Html.DisplayFor(model => model.MonthlyPayment)</td>
+                            </tr>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.BasePayment)</th>
+                                <td>@Html.DisplayFor(model => model.BasePayment)</td>
+                            </tr>
+                            @if (Model.Escrow > 0)
+                            {
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Escrow)</th>
+                                    <td>@Html.DisplayFor(model => model.Escrow)</td>
+                                </tr>
+                            }
+                            @if (Model.AddPayment > 0)
+                            {
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.AddPayment)</th>
+                                    <td>@Html.DisplayFor(model => model.AddPayment)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

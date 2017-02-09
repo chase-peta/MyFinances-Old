@@ -1378,6 +1378,8 @@ namespace MyFinances.Models
 		private System.DateTime _FirstPaymentDate;
 		
 		private decimal _InterestRate;
+
+        private decimal _PaymentInterestRate;
 		
 		private decimal _LoanAmount;
 		
@@ -1421,6 +1423,8 @@ namespace MyFinances.Models
     partial void OnFirstPaymentDateChanged();
     partial void OnInterestRateChanging(decimal value);
     partial void OnInterestRateChanged();
+    partial void OnPaymentInterestRateChanging (decimal value);
+    partial void OnPaymentInterestRateChanged ();
     partial void OnLoanAmountChanging(decimal value);
     partial void OnLoanAmountChanged();
     partial void OnNameChanging(string value);
@@ -1606,8 +1610,28 @@ namespace MyFinances.Models
 				}
 			}
 		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LoanAmount", DbType="Decimal(9,2) NOT NULL")]
+
+        [global::System.Data.Linq.Mapping.ColumnAttribute(Storage = "_PaymentInterestRate", DbType = "Decimal(9,5) NOT NULL")]
+        public decimal PaymentInterestRate
+        {
+            get
+            {
+                return this._PaymentInterestRate;
+            }
+            set
+            {
+                if ((this._PaymentInterestRate != value))
+                {
+                    this.OnPaymentInterestRateChanging(value);
+                    this.SendPropertyChanging();
+                    this._PaymentInterestRate = value;
+                    this.SendPropertyChanged("PaymentInterestRate");
+                    this.OnPaymentInterestRateChanged();
+                }
+            }
+        }
+
+        [global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LoanAmount", DbType="Decimal(9,2) NOT NULL")]
 		public decimal LoanAmount
 		{
 			get
