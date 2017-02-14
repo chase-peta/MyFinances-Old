@@ -26,6 +26,11 @@ footer {
     }
 }
 
+h4 {
+    margin-top: 20px;
+    padding-left: 10px;
+}
+
 .sidebar {
     background: #222;
     border: 1px solid #080808;

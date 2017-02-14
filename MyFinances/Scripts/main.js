@@ -212,4 +212,30 @@
         }
     });
 
+    if (typeof (charts) !== 'undefined') {
+        var chartCount = charts.length,
+            i = 0;
+        for (i = 0; i < chartCount; i++) {
+            if (charts[i].loadOnStart == true) {
+                var chart = new CanvasJS.Chart(charts[i].chartName, {
+                    theme: "theme3",
+                    animationEnabled: true,
+                    animationDuration: 500,
+                    data: [
+                        {
+                            type: "pie",
+                            showInLegend: false,
+                            toolTipContent: "{y} - #percent %",
+                            yValueFormatString: "$#0.00",
+                            legendText: "{indexLabel}",
+                            dataPoints: charts[i].data
+                        }
+                    ]
+                });
+                chart.render();
+                charts[i].loaded = true;
+            }
+        }
+    }
+
 });

@@ -96,17 +96,77 @@ namespace MyFinances.Models
                     double factor = (rate + (rate / (Math.Pow(rate + 1, Term) - 1)));
                     mp = Convert.ToDouble(LoanAmount) * factor;
                 }
-                else if(InterestRate > 0)
-                {
-
-                }
                 else
                 {
                     mp = Convert.ToDouble(LoanAmount) / Convert.ToDouble(Term);
                 }
-                return Convert.ToDecimal(Math.Ceiling(mp * 100) / 100);
+                if (mp > 0)
+                {
+                    return Convert.ToDecimal(Math.Ceiling(mp * 100) / 100);
+                }
+                else
+                {
+                    return 0.0M;
+                }
             }
         }
+
+        //Histoory of Loan totals and averages
+        public int HistoryNumberOfPayments { get; set; }
+
+        public decimal HistoryPaymentTotal { get; set; }
+
+        public decimal HistoryPaymentAverage { get; set; }
+
+        public decimal HistoryAdditionalTotal { get; set; }
+
+        public decimal HistoryAdditionalAverage { get; set; }
+
+        public decimal HistoryEscrowTotal { get; set; }
+
+        public decimal HistoryEscrowAverage { get; set; }
+
+        public decimal HistoryInterestTotal { get; set; }
+
+        public decimal HistoryInterestAverage { get; set; }
+
+        //Outlook of Loan totals and averages
+        public int OutlookNumberOfPayments { get; set; }
+
+        public decimal OutlookPaymentTotal { get; set; }
+
+        public decimal OutlookPaymentAverage { get; set; }
+
+        public decimal OutlookAdditionalTotal { get; set; }
+
+        public decimal OutlookAdditionalAverage { get; set; }
+
+        public decimal OutlookEscrowTotal { get; set; }
+
+        public decimal OutlookEscrowAverage { get; set; }
+
+        public decimal OutlookInterestTotal { get; set; }
+
+        public decimal OutlookInterestAverage { get; set; }
+
+        //Life of Loan totals and averages
+        public int LifeNumberOfPayments { get; set; }
+
+        public decimal LifePaymentTotal { get; set; }
+
+        public decimal LifePaymentAverage { get; set; }
+
+        public decimal LifeAdditionalTotal { get; set; }
+
+        public decimal LifeAdditionalAverage { get; set; }
+
+        public decimal LifeEscrowTotal { get; set; }
+
+        public decimal LifeEscrowAverage { get; set; }
+
+        public decimal LifeInterestTotal { get; set; }
+
+        public decimal LifeInterestAverage { get; set; }
     }
 
     public static class LoanExentions
@@ -144,6 +204,17 @@ namespace MyFinances.Models
             {
                 loan.HistoryMinYear = loan.LoanHistory.Min(x => x.DatePaid.Year);
                 loan.HistoryMaxYear = loan.LoanHistory.Max(x => x.DatePaid.Year);
+
+                loan.HistoryNumberOfPayments = loan.LoanHistory.Count();
+                loan.HistoryPaymentTotal = loan.LoanHistory.Sum(x => x.Payment);
+                loan.HistoryAdditionalTotal = loan.LoanHistory.Sum(x => x.AddPayment);
+                loan.HistoryEscrowTotal = loan.LoanHistory.Sum(x => x.Escrow);
+                loan.HistoryInterestTotal = loan.LoanHistory.Sum(x => x.Interest);
+
+                loan.HistoryPaymentAverage = loan.LoanHistory.Average(x => x.Payment);
+                loan.HistoryAdditionalAverage = loan.LoanHistory.Average(x => x.AddPayment);
+                loan.HistoryEscrowAverage = loan.LoanHistory.Average(x => x.Escrow);
+                loan.HistoryInterestAverage = loan.LoanHistory.Average(x => x.Interest);
             }
 
             if (loan.IsActive)
@@ -152,6 +223,28 @@ namespace MyFinances.Models
                 loan.PaymentsRemaining = loan.LoanOutlook.Count();
                 loan.OutlookMinYear = loan.LoanOutlook.Min(x => x.Date.Year);
                 loan.OutlookMaxYear = loan.LoanOutlook.Max(x => x.Date.Year);
+
+                loan.OutlookNumberOfPayments = loan.LoanOutlook.Count();
+                loan.OutlookPaymentTotal = loan.LoanOutlook.Sum(x => x.Payment);
+                loan.OutlookAdditionalTotal = loan.LoanOutlook.Sum(x => x.AddAmount);
+                loan.OutlookEscrowTotal = loan.LoanOutlook.Sum(x => x.EscrowAmount);
+                loan.OutlookInterestTotal = loan.LoanOutlook.Sum(x => x.InterestAmount);
+
+                loan.OutlookPaymentAverage = loan.LoanOutlook.Average(x => x.Payment);
+                loan.OutlookAdditionalAverage = loan.LoanOutlook.Average(x => x.AddAmount);
+                loan.OutlookEscrowAverage = loan.LoanOutlook.Average(x => x.EscrowAmount);
+                loan.OutlookInterestAverage = loan.LoanOutlook.Average(x => x.InterestAmount);
+
+                loan.LifeNumberOfPayments = loan.HistoryNumberOfPayments + loan.OutlookNumberOfPayments;
+                loan.LifePaymentTotal = loan.HistoryPaymentTotal + loan.OutlookPaymentTotal;
+                loan.LifeAdditionalTotal = loan.HistoryAdditionalTotal + loan.OutlookAdditionalTotal;
+                loan.LifeEscrowTotal = loan.HistoryEscrowTotal + loan.OutlookEscrowTotal;
+                loan.LifeInterestTotal = loan.HistoryInterestTotal + loan.OutlookInterestTotal;
+
+                loan.LifePaymentAverage = loan.LifePaymentTotal / loan.LifeNumberOfPayments;
+                loan.LifeAdditionalAverage = loan.LifeAdditionalTotal / loan.LifeNumberOfPayments;
+                loan.LifeEscrowAverage = loan.LifeEscrowTotal / loan.LifeNumberOfPayments;
+                loan.LifeInterestAverage = loan.LifeInterestTotal / loan.LifeNumberOfPayments;
             }
 
             return loan;
@@ -275,6 +368,90 @@ namespace MyFinances.Models
 
         [Display(Name = "Remaining"), DisplayFormat(DataFormatString = "{0} Months")]
         public object PaymentsRemaining { get; set; }
+
+        //History Totals and Averages
+        [Display(Name = "Payments")]
+        public object HistoryNumberOfPayments { get; set; }
+
+        [Display(Name = "Payment"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryPaymentTotal { get; set; }
+
+        [Display(Name = "Payment Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryPaymentAverage { get; set; }
+
+        [Display(Name = "Additional"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryAdditionalTotal { get; set; }
+
+        [Display(Name = "Additional Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryAdditionalAverage { get; set; }
+
+        [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryEscrowTotal { get; set; }
+
+        [Display(Name = "Escrow Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryEscrowAverage { get; set; }
+
+        [Display(Name = "Interest"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryInterestTotal { get; set; }
+
+        [Display(Name = "Interest Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object HistoryInterestAverage { get; set; }
+
+        //Outlook Totals and Averages
+        [Display(Name = "Payments")]
+        public object OutlookNumberOfPayments { get; set; }
+
+        [Display(Name = "Payment"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookPaymentTotal { get; set; }
+
+        [Display(Name = "Payment Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookPaymentAverage { get; set; }
+
+        [Display(Name = "Additional"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookAdditionalTotal { get; set; }
+
+        [Display(Name = "Additional Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookAdditionalAverage { get; set; }
+
+        [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookEscrowTotal { get; set; }
+
+        [Display(Name = "Escrow Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookEscrowAverage { get; set; }
+
+        [Display(Name = "Interest"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookInterestTotal { get; set; }
+
+        [Display(Name = "Interest Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object OutlookInterestAverage { get; set; }
+
+        //Life Totals and Averages
+        [Display(Name = "Payments")]
+        public object LifeNumberOfPayments { get; set; }
+
+        [Display(Name = "Payment"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifePaymentTotal { get; set; }
+
+        [Display(Name = "Payment Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifePaymentAverage { get; set; }
+
+        [Display(Name = "Additional"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifeAdditionalTotal { get; set; }
+
+        [Display(Name = "Additional Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifeAdditionalAverage { get; set; }
+
+        [Display(Name = "Escrow"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifeEscrowTotal { get; set; }
+
+        [Display(Name = "Escrow Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifeEscrowAverage { get; set; }
+
+        [Display(Name = "Interest"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifeInterestTotal { get; set; }
+
+        [Display(Name = "Interest Average"), DisplayFormat(DataFormatString = "{0:c}")]
+        public object LifeInterestAverage { get; set; }
 
         /* In Database */
         [Display(Name = "Add Payment"), DisplayFormat(DataFormatString = "{0:c}")]

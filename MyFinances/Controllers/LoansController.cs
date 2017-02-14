@@ -24,23 +24,31 @@ namespace MyFinances.Controllers
             ViewBag.Calculate = false;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
+                ViewBag.Action = "View";
                 return View(context.GetLoan(id));
             }
         }
 
         public ActionResult Add()
         {
-            return View();
+            ViewBag.Calculate = false;
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                ViewBag.Action = "Add";
+                return View("View");
+            }
         }
 
         [HttpPost]
-        public ActionResult Add(Loan collection)
+        public ActionResult Add(Loan collection, string button)
         {
+            ViewBag.Calculate = false;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
+                Loan loan = new Loan();
+
                 try
                 {
-                    Loan loan = new Loan();
                     loan.CreationDate = DateTime.Now;
                     loan.ModifyDate = DateTime.Now;
                     loan.Version = 1;
@@ -60,13 +68,26 @@ namespace MyFinances.Controllers
                     loan.InterestCompMonthly = true;
 
                     context.Loans.InsertOnSubmit(loan);
-                    context.SubmitChanges();
 
-                    return RedirectToAction("Index");
+                    switch (button)
+                    {
+                        case "Calculate":
+                            loan = loan.LoadLoan();
+                            ViewBag.Calculate = true;
+                            ViewBag.Action = "Add";
+                            return View("View", loan);
+                        case "Save":
+                            context.SubmitChanges();
+                            return RedirectToAction("Index");
+                        default:
+                            ViewBag.Action = "Add";
+                            return View("View", loan);
+                    }
                 }
                 catch
                 {
-                    return View(collection);
+                    ViewBag.Action = "Add";
+                    return View("View", loan);
                 }
             }
         }
@@ -76,7 +97,8 @@ namespace MyFinances.Controllers
             ViewBag.Calculate = false;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                return View(context.GetLoan(id));
+                ViewBag.Action = "Edit";
+                return View("View", context.GetLoan(id));
             }
         }
 
@@ -106,17 +128,20 @@ namespace MyFinances.Controllers
                         case "Calculate":
                             loan = loan.LoadLoan();
                             ViewBag.Calculate = true;
-                            return View(loan);
+                            ViewBag.Action = "Edit";
+                            return View("View", loan);
                         case "Save":
                             context.SubmitChanges();
                             return RedirectToAction("Index");
                         default:
-                            return View(loan);
+                            ViewBag.Action = "Edit";
+                            return View("View", loan);
                     }
                 }
                 catch
                 {
-                    return View(loan);
+                    ViewBag.Action = "Edit";
+                    return View("View", loan);
                 }
             }
         }

@@ -14,35 +14,56 @@
 
 <hr />
 
-<div class="tab-content">
-    <div class="table-container">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.Name)</th>
-                    <th class="visible-md visible-lg">@Html.DisplayNameFor(m => m.Payee)</th>
-                    <th class="visible-sm visible-md visible-lg text-right">@Html.DisplayNameFor(m => m.LastPaidAmount)</th>
-                    <th class="visible-sm visible-md visible-lg">@Html.DisplayNameFor(m => m.LastPaidDate)</th>
-                    <th>@Html.DisplayNameFor(m => m.DueDate)</th>
-                    <th class="text-right">@Html.DisplayNameFor(m => m.Amount)</th>
+<div class-"row">
+    <div class="col-xs-12 col-sm-9">
+        <div class="tab-content">
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayNameFor(m => m.Name)</th>
+                            <th class="visible-md visible-lg">@Html.DisplayNameFor(m => m.Payee)</th>
+                            <th class="visible-sm visible-md visible-lg text-right">@Html.DisplayNameFor(m => m.LastPaidAmount)</th>
+                            <th class="visible-sm visible-md visible-lg">@Html.DisplayNameFor(m => m.LastPaidDate)</th>
+                            <th>@Html.DisplayNameFor(m => m.DueDate)</th>
+                            <th class="text-right">@Html.DisplayNameFor(m => m.Amount)</th>
 
-                    <th>@Html.DisplayNameFor(m => m.DueInDays)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Bill item in Model)
-                {
-                    <tr class="@item.Classes">
-                        <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", new { id = item.Id })</td>
-                        <td class="visible-md visible-lg">@Html.DisplayFor(m => item.Payee)</td>
-                        <td class="visible-sm visible-md visible-lg text-right">@Html.DisplayFor(m => item.LastPaidAmount)</td>
-                        <td class="visible-sm visible-md visible-lg">@Html.DisplayFor(m => item.LastPaidDate)</td>
-                        <td>@Html.DisplayFor(m => item.DueDate)</td>
-                        <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
-                        <td>@Html.DisplayFor(m => item.DueIn)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                            <th>@Html.DisplayNameFor(m => m.DueInDays)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Bill item in Model)
+                        {
+                            <tr class="@item.Classes">
+                                <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", new { id = item.Id })</td>
+                                <td class="visible-md visible-lg">@Html.DisplayFor(m => item.Payee)</td>
+                                <td class="visible-sm visible-md visible-lg text-right">@Html.DisplayFor(m => item.LastPaidAmount)</td>
+                                <td class="visible-sm visible-md visible-lg">@Html.DisplayFor(m => item.LastPaidDate)</td>
+                                <td>@Html.DisplayFor(m => item.DueDate)</td>
+                                <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
+                                <td>@Html.DisplayFor(m => item.DueIn)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-3">
+        <div id="chart" style="height: 350px; width: 100%;"></div>
     </div>
 </div>
+<script>
+    charts = [];
+    charts.push({
+        chartName: "chart",
+        loadOnStart: true,
+        loaded: true,
+        data: [
+            @foreach (Bill bill in Model)
+            {
+                @:{ y: @bill.Amount, indexLabel: "@bill.Name" },
+            }
+        ]
+    });
+</script>

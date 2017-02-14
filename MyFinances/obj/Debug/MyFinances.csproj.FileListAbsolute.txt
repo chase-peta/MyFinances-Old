@@ -34,3 +34,4 @@ C:\OneDrive\Sites\MyFinances\MyFinances\bin\System.Web.WebPages.Razor.xml
 C:\OneDrive\Sites\MyFinances\MyFinances\obj\Debug\MyFinances.dll
 C:\OneDrive\Sites\MyFinances\MyFinances\obj\Debug\MyFinances.pdb
 C:\OneDrive\Sites\MyFinances\MyFinances\bin\MyFinances.dll.config
+C:\OneDrive\Sites\MyFinances\MyFinances\obj\Debug\MyFinances.csprojResolveAssemblyReference.cache
