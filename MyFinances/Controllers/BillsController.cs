@@ -23,13 +23,18 @@ namespace MyFinances.Controllers
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
+                ViewBag.Action = "View";
                 return View(context.GetBill(id));
             }
         }
 
         public ActionResult Add()
         {
-            return View();
+            using (LinkToDBDataContext context = new LinkToDBDataContext())
+            {
+                ViewBag.Action = "Add";
+                return View("View");
+            }
         }
 
         [HttpPost]
@@ -57,12 +62,13 @@ namespace MyFinances.Controllers
 
                     context.Bills.InsertOnSubmit(bill);
                     context.SubmitChanges();
-
+                    
                     return RedirectToAction("Index");
                 }
                 catch
                 {
-                    return View(collection);
+                    ViewBag.Action = "Add";
+                    return View("View", collection);
                 }
             }
         }
@@ -71,7 +77,8 @@ namespace MyFinances.Controllers
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                return View(context.GetBill(id));
+                ViewBag.Action = "Edit";
+                return View("View", context.GetBill(id));
             }
         }
 
@@ -100,7 +107,8 @@ namespace MyFinances.Controllers
                 }
                 catch
                 {
-                    return View(bill);
+                    ViewBag.Action = "Edit";
+                    return View("View", bill);
                 }
             }
         }

@@ -176,16 +176,12 @@
     <Content Include="Views\Index.cshtml" />
     <Content Include="Views\Loans\Index.cshtml" />
     <Content Include="Views\Bills\Index.cshtml" />
-    <Content Include="Views\Bills\Edit.cshtml" />
-    <Content Include="Views\Loans\Edit.cshtml" />
     <Content Include="Views\Bills\EditPayment.cshtml" />
     <Content Include="Views\Bills\AddPayment.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Loans\AddPayment.cshtml" />
-    <Content Include="Views\Bills\Add.cshtml" />
     <Content Include="Views\Bills\View.cshtml" />
     <Content Include="Views\Loans\View.cshtml" />
-    <Content Include="Views\Loans\Add.cshtml" />
     <Content Include="Views\Loans\EditPayment.cshtml" />
     <Content Include="Views\History\Index.cshtml" />
     <None Include="Web.Debug.config">
