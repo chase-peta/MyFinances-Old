@@ -144,6 +144,9 @@ table.dataTable tfoot td {
 .table > tbody > tr.past-due {
     background-color: #ffcccc;
 }
+.table > tbody > tr.not-active {
+    background-color: #eeeeee;
+}
 
 .table-striped > tbody > tr:nth-child(odd) > td,
 .table-striped > tbody > tr:nth-child(odd) > th { 

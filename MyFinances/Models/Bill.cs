@@ -38,6 +38,8 @@ namespace MyFinances.Models
         {
             get
             {
+                if (!IsActive)
+                    return "Not Active";
                 if (IsPastDue)
                     return "Past Due";
                 else if (DueInDays < 0)
@@ -55,14 +57,20 @@ namespace MyFinances.Models
         {
             get
             {
+                string returnString = "";
                 if (IsPastDue)
-                    return "past-due";
+                    returnString = "past-due";
                 else if (DueInDays < 0)
-                    return "paid";
+                    returnString = "paid";
                 else if (DueInDays < 5)
-                    return "due-soon";
-                else
-                    return "";
+                    returnString = "due-soon";
+
+                if (!IsActive)
+                {
+                    returnString += " not-active";
+                }
+
+                return returnString;
             }
         }
     }

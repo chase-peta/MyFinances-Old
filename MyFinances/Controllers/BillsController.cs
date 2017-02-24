@@ -11,11 +11,12 @@ namespace MyFinances.Controllers
         /* =========================
          * Bill Functions
          * ========================= */
-        public ActionResult Index()
+        public ActionResult Index(bool showInactive = false)
         {
+            ViewBag.ShowInactive = showInactive;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                return View(context.GetBills().Where(x => x.IsActive == true && x.DueInDays <= 45).OrderBy(x => x.DueDate));
+                return View(context.GetBills(!showInactive).OrderBy(x => x.DueDate));
             }
         }
 

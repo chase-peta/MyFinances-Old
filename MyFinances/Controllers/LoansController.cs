@@ -42,6 +42,7 @@ namespace MyFinances.Controllers
         [HttpPost]
         public ActionResult Add(Loan collection, string button)
         {
+            ViewBag.Action = "Add";
             ViewBag.Calculate = false;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
@@ -66,7 +67,7 @@ namespace MyFinances.Controllers
                     loan.Escrow = collection.Escrow;
                     loan.InterestCompDaily = false;
                     loan.InterestCompMonthly = true;
-
+                    
                     context.Loans.InsertOnSubmit(loan);
 
                     switch (button)
@@ -74,19 +75,16 @@ namespace MyFinances.Controllers
                         case "Calculate":
                             loan = loan.LoadLoan();
                             ViewBag.Calculate = true;
-                            ViewBag.Action = "Add";
                             return View("View", loan);
                         case "Save":
                             context.SubmitChanges();
                             return RedirectToAction("Index");
                         default:
-                            ViewBag.Action = "Add";
                             return View("View", loan);
                     }
                 }
                 catch
                 {
-                    ViewBag.Action = "Add";
                     return View("View", loan);
                 }
             }
