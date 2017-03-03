@@ -181,6 +181,11 @@ namespace MyFinances.Models
             return loans;
         }
 
+        public static IEnumerable<Loan> GetLoansForMenu(this LinkToDBDataContext context)
+        {
+            return context.Loans.Where(x => x.IsActive == true).OrderBy(x => x.Name).ToList();
+        }
+
         public static Loan GetLoan(this LinkToDBDataContext context, int id)
         {
             Loan loan = context.Loans.FirstOrDefault(x => x.Id == id).LoadLoan();

@@ -1,20 +1,26 @@
 ﻿/* ================
     Layout
    ================ */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
 header .container-fluid,
-.body-content,
-footer {
+main,
+footer .container-fluid {
     max-width: 1600px;
     margin: 0 auto;
 }
 
-footer {
-    padding: 0 15px;
+header {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
+#page-container {
+    padding-top: 52px;
+}
+
+main {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .navbar {
@@ -24,6 +30,26 @@ footer {
     .navbar {
         border-radius: 0;
     }
+}
+
+.panel-title {
+    font-size: 19px;
+}
+
+footer .navbar-inverse {
+    color: #999;
+}
+footer .container-fluid {
+    padding: 15px;
+}
+footer p {
+    margin: 0;
+}
+
+.nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 h4 {
@@ -87,7 +113,7 @@ hr {
 
 .nav-tabs {
     border-bottom: 0;
-    margin: 0 20px;
+    margin: 0;
 }
 
 /* ================
@@ -276,4 +302,20 @@ input[type="checkbox"].input-validation-error {
 .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > .active > a:hover,
 .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > .active > a:focus {
     background-color: #4a9fe9;
+}
+
+.navbar-inverse .dropdown-menu {
+    background-color: #222;
+}
+.navbar-inverse .dropdown-menu>li>a {
+    color: #999;
+    padding: 5px 20px;
+}
+.navbar-inverse .dropdown-menu>li>a:hover {
+    color: #fff;
+    background-color: #000;
+}
+.navbar-inverse .dropdown-menu .divider {
+    background-color: #2a2a2a;
+    margin: 4px 0;
 }

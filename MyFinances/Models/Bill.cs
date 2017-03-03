@@ -87,6 +87,11 @@ namespace MyFinances.Models
             return bills;
         }
 
+        public static IEnumerable<Bill> GetBillsForMenu (this LinkToDBDataContext context)
+        {
+            return context.Bills.Where(x => x.IsActive == true).OrderBy(x => x.Name).ToList();
+        }
+
         public static Bill GetBill(this LinkToDBDataContext context, int id)
         {
             Bill bill = context.Bills.FirstOrDefault(x => x.Id == id).LoadBill();

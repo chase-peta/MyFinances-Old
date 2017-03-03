@@ -5,9 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewBag.Title</h2>
-
-<hr />
+<h1>@ViewBag.Title</h1>
 
 <script>
     charts = [];
@@ -17,7 +15,7 @@
     @foreach (DashboardDateRange range in Model.DateRanges)
     {
         count += 1;
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <div class="panel with-nav-tabs panel-primary">
                 <div class="panel-heading clearfix">
                     <div class="pull-left">
@@ -46,7 +44,7 @@
                                 @foreach (DashboardItem item in range.Items)
                                 {
                                     <tr class="@item.Classes">
-                                        <td>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", item.Type + "s", new { id = item.Id }, null)</td>
+                                        <th>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", item.Type + "s", new { id = item.Id }, null)</th>
                                         <td>@Html.DisplayFor(m => item.Date)</td>
                                         <td>@Html.DisplayFor(m => item.DueIn)</td>
                                         <td>
@@ -54,11 +52,11 @@
                                             {
                                                 if (item.Type == "Bill")
                                                 {
-                                                    @Html.ActionLink("Paid", "Paid", item.Type + "s", new { id = item.Id }, null)
+                                                    @Html.ActionLink("Paid", "Paid", item.Type + "s", new { id = item.Id }, new {@arial_label = "Paid " + item.Name + " " + item.Type })
                                                 }
                                                 else if (item.Type == "Loan")
                                                 {
-                                                    @Html.ActionLink("Paid", "AddPayment", item.Type + "s", new { id = item.Id }, null)
+                                                    @Html.ActionLink("Paid", "AddPayment", item.Type + "s", new { id = item.Id }, new { @arial_label = "Paid " + item.Name + " " + item.Type })
                                                 }
                                             }
                                         </td>
