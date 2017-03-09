@@ -59,11 +59,11 @@ namespace MyFinances.Models
             {
                 string returnString = "";
                 if (IsPastDue)
-                    returnString = "past-due";
+                    returnString = "alert-danger";
                 else if (DueInDays < 0)
-                    returnString = "paid";
+                    returnString = "alert-success";
                 else if (DueInDays < 5)
-                    returnString = "due-soon";
+                    returnString = "alert-warning";
 
                 if (!IsActive)
                 {
@@ -185,9 +185,6 @@ namespace MyFinances.Models
 
         [Display(Name = "Is Active")]
         public object IsActive { get; set; }
-
-        [Display(Name = "Issue Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
-        public object IssueDate { get; set; }
 
         [Display(Name = "Shared")]
         public object Shared { get; set; }

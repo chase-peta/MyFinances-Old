@@ -99,11 +99,11 @@ namespace MyFinances.Models
             get
             {
                 if (IsPaid || (DueInDays < 0 && !IsPastDue))
-                    return "paid";
+                    return "alert-success";
                 else if (IsPastDue)
-                    return "past-due";
+                    return "alert-danger";
                 else if (DueInDays < 5)
-                    return "due-soon";
+                    return "alert-warning";
                 else
                     return "";
             }

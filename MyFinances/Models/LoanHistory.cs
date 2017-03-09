@@ -9,6 +9,20 @@ namespace MyFinances.Models
     [MetadataType(typeof(LoanHistoryMeta))]
     public partial class LoanHistory
     {
+        public LoanHistory(Loan loan)
+        {
+            LoanOutlook outlook = loan.LoanOutlook.FirstOrDefault();
+            this.LoanId = loan.Id;
+            this.BasicPayment = outlook.BaseAmount;
+            this.AddPayment = outlook.AddAmount;
+            this.Interest = outlook.InterestAmount;
+            this.Escrow = outlook.EscrowAmount;
+            this.DatePaid = outlook.Date;
+            this.Principal = outlook.Principal;
+            this.PaymentTypeId = loan.PaymentTypeId;
+            this.Loan = loan;
+        }
+
         public decimal Payment { get { return BasicPayment + AddPayment + Interest + Escrow; } }
 
         public decimal Principal { get; set; }

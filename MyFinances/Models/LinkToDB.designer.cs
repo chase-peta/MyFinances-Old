@@ -153,8 +153,6 @@ namespace MyFinances.Models
 		
 		private int _PaymentTypeId;
 		
-		private System.Nullable<System.DateTime> _IssueDate;
-		
 		private EntityRef<Bill> _Bill;
 		
 		private EntityRef<PaymentType> _PaymentType;
@@ -181,8 +179,6 @@ namespace MyFinances.Models
     partial void OnPayeeChanged();
     partial void OnPaymentTypeIdChanging(int value);
     partial void OnPaymentTypeIdChanged();
-    partial void OnIssueDateChanging(System.Nullable<System.DateTime> value);
-    partial void OnIssueDateChanged();
     #endregion
 		
 		public BillHistory()
@@ -380,26 +376,6 @@ namespace MyFinances.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IssueDate", DbType="Date")]
-		public System.Nullable<System.DateTime> IssueDate
-		{
-			get
-			{
-				return this._IssueDate;
-			}
-			set
-			{
-				if ((this._IssueDate != value))
-				{
-					this.OnIssueDateChanging(value);
-					this.SendPropertyChanging();
-					this._IssueDate = value;
-					this.SendPropertyChanged("IssueDate");
-					this.OnIssueDateChanged();
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Bill_BillHistory", Storage="_Bill", ThisKey="BillId", OtherKey="Id", IsForeignKey=true)]
 		public Bill Bill
 		{
@@ -519,8 +495,6 @@ namespace MyFinances.Models
 		
 		private int _UserId;
 		
-		private System.Nullable<System.DateTime> _IssueDate;
-		
 		private bool _Shared;
 		
 		private EntitySet<BillHistory> _BillHistories;
@@ -557,8 +531,6 @@ namespace MyFinances.Models
     partial void OnIsActiveChanged();
     partial void OnUserIdChanging(int value);
     partial void OnUserIdChanged();
-    partial void OnIssueDateChanging(System.Nullable<System.DateTime> value);
-    partial void OnIssueDateChanged();
     partial void OnSharedChanging(bool value);
     partial void OnSharedChanged();
     #endregion
@@ -815,26 +787,6 @@ namespace MyFinances.Models
 					this._UserId = value;
 					this.SendPropertyChanged("UserId");
 					this.OnUserIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IssueDate", DbType="Date")]
-		public System.Nullable<System.DateTime> IssueDate
-		{
-			get
-			{
-				return this._IssueDate;
-			}
-			set
-			{
-				if ((this._IssueDate != value))
-				{
-					this.OnIssueDateChanging(value);
-					this.SendPropertyChanging();
-					this._IssueDate = value;
-					this.SendPropertyChanged("IssueDate");
-					this.OnIssueDateChanged();
 				}
 			}
 		}

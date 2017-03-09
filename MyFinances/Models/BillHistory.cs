@@ -50,9 +50,6 @@ namespace MyFinances.Models
         [Display(Name = "Payment Type")]
         public object PaymentTypeId { get; set; }
 
-        [Display(Name = "Issue Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
-        public object IssueDate { get; set; }
-
         /* Not Used In View */
         public object Id { get; set; }
 
