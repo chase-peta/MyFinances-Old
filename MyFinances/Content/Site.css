@@ -36,6 +36,9 @@ main {
     font-size: 19px;
 }
 
+footer {
+    margin-top: 20px;
+}
 footer .navbar-inverse {
     color: #999;
 }
@@ -116,6 +119,16 @@ hr {
     margin: 0;
 }
 
+.alert-danger a {
+    color: #843534;
+}
+.alert-warning a {
+    color: #66512c;
+}
+.alert-success a {
+    color: #2b542c;
+}
+
 /* ================
     Table
    ================ */
@@ -136,6 +149,9 @@ hr {
 }
 .table.hidden-on-load.dataTable {
     display: table;
+}
+.table.dataTable.no-footer {
+    border-bottom: 0;
 }
 
 .table th,
@@ -160,18 +176,28 @@ table.dataTable tfoot td {
 .table tfoot>tr>td {
     border-color: #aaa;
 }
-
-.table > tbody > tr.paid {
-    background-color: #ccffcc;
-}
-.table > tbody > tr.due-soon {
-    background-color: #ffffcc;
-}
-.table > tbody > tr.past-due {
-    background-color: #ffcccc;
-}
+.table.dataTable > tbody > tr.not-active,
 .table > tbody > tr.not-active {
-    background-color: #eeeeee;
+    background-color: #ddd;
+    color: #000;
+}
+.table > tbody > tr.not-active a {
+    color: #000;
+}
+
+.table-striped > tbody > tr.next-payment th,
+.table-striped > tbody > tr.next-payment td {
+    border-top-width: 2px;
+    border-top-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+}
+.table-striped > tbody > tr.alert-info th,
+.table-striped > tbody > tr.alert-info td {
+    border-top-width: 2px;
+    border-top-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
 }
 
 .table-striped > tbody > tr:nth-child(odd) > td,
@@ -179,13 +205,36 @@ table.dataTable tfoot td {
     background-color: rgba(0, 0, 0, .1);
 }
 
+table.dataTable thead th {
+    border-bottom: 2px solid #aaa;
+}
+
+table.dataTable tfoot th, table.dataTable tfoot td {
+    border-top: 0;
+}
+table.dataTable tfoot tr:first-child th, table.dataTable tfoot tr:first-child td {
+    border-top: 2px solid #aaa;
+}
+.table.dataTable > tbody > tr.editing {
+    font-style: italic;
+    font-weight: bold;
+    background: #d0def2;
+    font-size: 1.3em
+}
+.table.dataTable > tbody > tr.editing > td,
+.table.dataTable > tbody > tr.editing > th {
+    border-top: 2px solid #6292d6;
+    border-bottom: 2px solid #6292d6;
+}
+
+
 /* ================
     Form Stuff
    ================ */
 
 .update-form {
     padding: 20px;
-    background: #ddd;
+    background: rgba(0, 0, 0, .1);
     border: 1px solid #999999;
     border-radius: 4px;
 }
