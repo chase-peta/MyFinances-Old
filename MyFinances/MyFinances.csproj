@@ -177,15 +177,16 @@
     <Content Include="Views\Index.cshtml" />
     <Content Include="Views\Loans\Index.cshtml" />
     <Content Include="Views\Bills\Index.cshtml" />
-    <Content Include="Views\Bills\EditPayment.cshtml" />
-    <Content Include="Views\Bills\AddPayment.cshtml" />
+    <Content Include="Views\Bills\Payment.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Loans\AddPayment.cshtml" />
     <Content Include="Views\Bills\View.cshtml" />
     <Content Include="Views\Loans\View.cshtml" />
-    <Content Include="Views\Loans\EditPayment.cshtml" />
+    <Content Include="Views\Loans\Payment.cshtml" />
     <Content Include="Views\History\Index.cshtml" />
     <Content Include="Views\Shared\Menu.cshtml" />
+    <Content Include="Views\Loans\_HistoryOutlook.cshtml" />
+    <Content Include="Views\Loans\_LoanForm.cshtml" />
+    <Content Include="Views\Loans\_PaymentInfo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
