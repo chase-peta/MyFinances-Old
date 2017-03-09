@@ -52,7 +52,7 @@
                                 </thead>
                                 @foreach (DashboardItem item in range.Items)
                                 {
-                                    <tr class="@item.Classes">
+                                    <tr>
                                         <th>@Html.ActionLink(Html.DisplayFor(m => item.Name).ToString(), "View", item.Type + "s", new { id = item.Id }, null)</th>
                                         <td>@Html.DisplayFor(m => item.Date)</td>
                                         <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
