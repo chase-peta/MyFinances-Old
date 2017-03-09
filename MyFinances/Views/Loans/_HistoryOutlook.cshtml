@@ -1,0 +1,278 @@
+﻿@model Loan
+
+<div id="LoanTabs" class="margin-top-20">
+    <ul class="nav nav-tabs" role="tablist">
+        @if (ViewBag.Action != "Add")
+        {
+            <li role="presentation" class="@(!@ViewBag.Calculate ? "active" : "")"><a href="#loanPaymentHistory" aria-controls="loanPaymentHistory" role="tab" data-toggle="tab" class="btn-md">Payment History</a></li>
+        }
+        @if (ViewBag.Action != "Add" || ViewBag.Calculate)
+        {
+            <li role="presentation" class="@(@ViewBag.Calculate ? "active" : "")"><a href="#loanPaymentOutlook" aria-controls="loanPaymentOutlook" role="tab" data-toggle="tab" class="btn-md">Payment Outlook</a></li>
+        }
+    </ul>
+
+    <div class="tab-content">
+        @if (ViewBag.Action != "Add")
+        {
+            <div role="tabpanel" class="tab-pane fade in @(!@ViewBag.Calculate ? "active" : "")" id="loanPaymentHistory">
+                <div class="text-center">
+                    <ul class="pagination">
+                        @for (int i = Model.HistoryMaxYear; i >= Model.HistoryMinYear; i--)
+                        {
+                            <li><a href="#" data-year="@i">@i</a></li>
+                        }
+                        <li><a href="#" data-year="">Show All</a></li>
+                    </ul>
+                </div>
+
+                @using (Html.BeginForm())
+                {
+                <div class="table-container border-bottom-ddd">
+                    <table class="table table-striped hidden-on-load" id="LoanPaymentHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(m => m.LoanHistory.First().DatePaid)</th>
+                                @if (Model.HistoryInterestTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.HistoryInterestTotal)</th>
+                                }
+                                @if (Model.HistoryEscrowTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.HistoryEscrowTotal)</th>
+                                }
+                                @if (Model.HistoryBaseTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.HistoryBaseTotal)</th>
+                                }
+                                @if (Model.HistoryAdditionalTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.HistoryAdditionalTotal)</th>
+                                }
+                                <th class="text-right">@Html.DisplayNameFor(model => model.HistoryPaymentTotal)</th>
+                                <th class="text-right">@Html.DisplayNameFor(model => model.Principal)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ var currentPrincipal = Model.LoanAmount; }
+                            @foreach (var item in Model.LoanHistory)
+                            {
+                                <tr class="@(@item.Equals(Model.LastPayemnt) ? "alert-success" : "")" id="LoanPayment-@item.Id" data-current-principal="@currentPrincipal">
+                                    <th data-search="@item.DatePaid.Year">@Html.ActionLink(item.DatePaid.ToString("MMMM - dd"), "EditPayment", new { id = item.Id })</th>
+                                    @if (Model.HistoryInterestTotal > 0)
+                                    {
+                                        <td class="text-right"><span class="interest">@Html.DisplayFor(m => item.Interest)</span></td>
+                                    }
+                                    @if (Model.HistoryEscrowTotal > 0)
+                                    {
+                                        <td class="text-right"><span class="escrow">@Html.DisplayFor(m => item.Escrow)</span></td>
+                                    }
+                                    @if (Model.HistoryBaseTotal > 0)
+                                    {
+                                        <td class="text-right"><span class="base">@Html.DisplayFor(m => item.BasicPayment)</span></td>
+                                    }
+                                    @if (Model.HistoryAdditionalTotal > 0)
+                                    {
+                                        <td class="text-right"><span class="add">@Html.DisplayFor(m => item.AddPayment)</span></td>
+                                    }
+                                    <td class="text-right"><span class="payment">@Html.DisplayFor(m => item.Payment)</span></td>
+                                    <td class="text-right"><span class="principal">@Html.DisplayFor(m => item.Principal)</span></td>
+                                </tr>
+                                { currentPrincipal = item.Principal; }
+                            }
+                            <tr class="next-payment alert-warning" id="LoanPayment-0" data-current-principal="@currentPrincipal">
+                                <th data-search="@Model.HistoryMaxYear">
+                                    @if (ViewBag.Action == "Add Payment")
+                                    {
+                                        <span class="datePaid">@Model.NextPayment.DatePaid.ToString("MMMM - dd")</span>
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink(Model.NextPayment.DatePaid.ToString("MMMM - dd"), "AddPayment", new { id = Model.Id })
+                                    }
+                                </th>
+                                @if (Model.HistoryInterestTotal > 0)
+                                {
+                                    <td class="text-right"><span class="interest">@Html.DisplayFor(m => Model.NextPayment.Interest)</span></td>
+                                }
+                                @if (Model.HistoryEscrowTotal > 0)
+                                {
+                                    <td class="text-right"><span class="escrow">@Html.DisplayFor(m => Model.NextPayment.Escrow)</span></td>
+                                }
+                                @if (Model.HistoryBaseTotal > 0)
+                                {
+                                    <td class="text-right"><span class="base">@Html.DisplayFor(m => Model.NextPayment.BasicPayment)</span></td>
+                                }
+                                @if (Model.HistoryAdditionalTotal > 0)
+                                {
+                                    <td class="text-right"><span class="add">@Html.DisplayFor(m => Model.NextPayment.AddPayment)</span></td>
+                                }
+                                <td class="text-right"><span class="payment">@Html.DisplayFor(m => Model.NextPayment.Payment)</span></td>
+                                <td class="text-right"><span class="principal">@Html.DisplayFor(m => Model.NextPayment.Principal)</span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Totals</th>
+                                @if (Model.HistoryInterestTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryInterestTotal)</th>
+                                }
+                                @if (Model.HistoryEscrowTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryEscrowTotal)</th>
+                                }
+                                @if (Model.HistoryBaseTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryBaseTotal)</th>
+                                }
+                                @if (Model.HistoryAdditionalTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryAdditionalTotal)</th>
+                                }
+                                <th class="text-right">@Html.DisplayFor(model => model.HistoryPaymentTotal)</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>Averages</th>
+                                @if (Model.HistoryInterestAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryInterestAverage)</th>
+                                }
+                                @if (Model.HistoryEscrowAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryEscrowAverage)</th>
+                                }
+                                @if (Model.HistoryBaseAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryBaseAverage)</th>
+                                }
+                                @if (Model.HistoryAdditionalAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.HistoryAdditionalAverage)</th>
+                                }
+                                <th class="text-right">@Html.DisplayFor(model => model.HistoryPaymentAverage)</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                                }
+            </div>
+        }
+
+        @if (ViewBag.Action != "Add" || ViewBag.Calculate)
+        {
+            <div role="tabpanel" class="tab-pane fade in  @(@ViewBag.Calculate ? "active" : "")" id="loanPaymentOutlook">
+                <div class="text-center">
+                    <ul class="pagination">
+                        @for (int i = Model.OutlookMinYear; i <= Model.OutlookMaxYear; i++)
+                        {
+                            <li><a href="#" data-year="@i">@i</a></li>
+                        }
+                        <li><a href="#" data-year="">Show All</a></li>
+                    </ul>
+                </div>
+
+                <div class="table-container border-bottom-ddd">
+                    <table class="table table-striped hidden-on-load" id="LoanPaymentOutlookTable">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(m => m.LoanOutlook.First().Date)</th>
+                                @if (Model.OutlookInterestTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.OutlookInterestTotal)</th>
+                                }
+                                @if (Model.OutlookEscrowTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.OutlookEscrowTotal)</th>
+                                }
+                                @if (Model.OutlookBaseTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.OutlookBaseTotal)</th>
+                                }
+                                @if (Model.OutlookAdditionalTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayNameFor(model => model.OutlookAdditionalTotal)</th>
+                                }
+                                <th class="text-right">@Html.DisplayNameFor(model => model.OutlookPaymentTotal)</th>
+                                <th class="text-right">@Html.DisplayNameFor(model => model.Principal)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.LoanOutlook)
+                            {
+                                <tr>
+                                    <th data-search="@item.Date.Year">@item.Date.ToString("MMMM - dd")</th>
+                                    @if (Model.OutlookInterestTotal > 0)
+                                    {
+                                        <td class="text-right">@Html.DisplayFor(m => item.InterestAmount)</td>
+                                    }
+                                    @if (Model.OutlookEscrowTotal > 0)
+                                    {
+                                        <td class="text-right">@Html.DisplayFor(m => item.EscrowAmount)</td>
+                                    }
+                                    @if (Model.OutlookBaseTotal > 0)
+                                    {
+                                        <td class="text-right">@Html.DisplayFor(m => item.BaseAmount)</td>
+                                    }
+                                    @if (Model.OutlookAdditionalTotal > 0)
+                                    {
+                                        <td class="text-right">@Html.DisplayFor(m => item.AddAmount)</td>
+                                    }
+                                    <td class="text-right">@Html.DisplayFor(m => item.Payment)</td>
+                                    <td class="text-right">@Html.DisplayFor(m => item.Principal)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Totals</th>
+                                @if (Model.OutlookInterestTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookInterestTotal)</th>
+                                }
+                                @if (Model.OutlookEscrowTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookEscrowTotal)</th>
+                                }
+                                @if (Model.OutlookBaseTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookBaseTotal)</th>
+                                }
+                                @if (Model.OutlookAdditionalTotal > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookAdditionalTotal)</th>
+                                }
+                                <th class="text-right">@Html.DisplayFor(model => model.OutlookPaymentTotal)</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>Averages</th>
+                                @if (Model.OutlookInterestAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookInterestAverage)</th>
+                                }
+                                @if (Model.OutlookEscrowAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookEscrowAverage)</th>
+                                }
+                                @if (Model.OutlookBaseAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookBaseAverage)</th>
+                                }
+                                @if (Model.OutlookAdditionalAverage > 0)
+                                {
+                                    <th class="text-right">@Html.DisplayFor(model => model.OutlookAdditionalAverage)</th>
+                                }
+                                <th class="text-right">@Html.DisplayFor(model => model.OutlookPaymentAverage)</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
