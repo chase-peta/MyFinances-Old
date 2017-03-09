@@ -8,6 +8,12 @@ namespace MyFinances.Controllers
 {
     public class LoansController : Controller
     {
+        public LoansController()
+        {
+            ViewBag.Action = "View";
+            ViewBag.Calculate = false;
+        }
+
         /* =========================
          * Loan Functions
          * ========================= */
@@ -21,20 +27,17 @@ namespace MyFinances.Controllers
 
         public ActionResult View(int id)
         {
-            ViewBag.Calculate = false;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                ViewBag.Action = "View";
                 return View(context.GetLoan(id));
             }
         }
 
         public ActionResult Add()
         {
-            ViewBag.Calculate = false;
+            ViewBag.Action = "Add";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                ViewBag.Action = "Add";
                 return View("View");
             }
         }
@@ -43,7 +46,6 @@ namespace MyFinances.Controllers
         public ActionResult Add(Loan collection, string button)
         {
             ViewBag.Action = "Add";
-            ViewBag.Calculate = false;
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
                 Loan loan = new Loan();
@@ -92,10 +94,9 @@ namespace MyFinances.Controllers
 
         public ActionResult Edit(int id)
         {
-            ViewBag.Calculate = false;
+            ViewBag.Action = "Edit";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                ViewBag.Action = "Edit";
                 return View("View", context.GetLoan(id));
             }
         }
@@ -103,7 +104,7 @@ namespace MyFinances.Controllers
         [HttpPost]
         public ActionResult Edit(int id, Loan collection, string button)
         {
-            ViewBag.Calculate = false;
+            ViewBag.Action = "Edit";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
                 Loan loan = context.GetLoan(id);
@@ -138,7 +139,6 @@ namespace MyFinances.Controllers
                 }
                 catch
                 {
-                    ViewBag.Action = "Edit";
                     return View("View", loan);
                 }
             }
@@ -149,28 +149,18 @@ namespace MyFinances.Controllers
          * ========================= */
         public ActionResult AddPayment(int id)
         {
+            ViewBag.Action = "Add Payment";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
-                Loan loan = context.GetLoan(id);
-                LoanOutlook outlook = loan.LoanOutlook.FirstOrDefault();
 
-                LoanHistory history = new LoanHistory();
-                history.LoanId = loan.Id;
-                history.BasicPayment = outlook.BaseAmount;
-                history.AddPayment = outlook.AddAmount;
-                history.Interest = outlook.InterestAmount;
-                history.Escrow = outlook.EscrowAmount;
-                history.DatePaid = outlook.Date;
-                history.PaymentTypeId = loan.PaymentTypeId;
-                history.Loan = loan;
-
-                return View(history);
+                return View("Payment", context.GetLoan(id).NextPayment);
             }
         }
 
         [HttpPost]
         public ActionResult AddPayment(LoanHistory collection)
         {
+            ViewBag.Action = "Add Payment";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
                 try
@@ -196,28 +186,29 @@ namespace MyFinances.Controllers
                 }
                 catch
                 {
-                    return View(collection);
+                    return View("Payment", collection);
                 }
             }
         }
 
         public ActionResult EditPayment(int id)
         {
+            ViewBag.Action = "Edit Payment";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
                 LoanHistory history = context.GetLoanHistoryItem(id);
                 history.Loan = context.GetLoan(history.LoanId);
-                return View(history);
+                return View("Payment", history);
             }
         }
 
         [HttpPost]
         public ActionResult EditPayment(LoanHistory collection)
         {
+            ViewBag.Action = "Edit Payment";
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
                 LoanHistory history = context.GetLoanHistoryItem(collection.Id);
-
                 try
                 {
                     history.ModifyDate = DateTime.Now;
@@ -235,7 +226,7 @@ namespace MyFinances.Controllers
                 }
                 catch
                 {
-                    return View(history);
+                    return View("Payment", collection);
                 }
             }
         }

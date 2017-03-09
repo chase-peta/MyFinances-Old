@@ -55,7 +55,6 @@ namespace MyFinances.Controllers
 
                     bill.Amount = collection.Amount;
                     bill.DueDate = collection.DueDate;
-                    bill.IssueDate = collection.IssueDate;
                     bill.Name = collection.Name;
                     bill.Payee = collection.Payee;
                     bill.Shared = collection.Shared;
@@ -98,7 +97,6 @@ namespace MyFinances.Controllers
                     bill.Payee = collection.Payee;
                     bill.DueDate = collection.DueDate;
                     bill.Amount = collection.Amount;
-                    bill.IssueDate = collection.IssueDate;
                     bill.StaysSame = collection.StaysSame;
                     bill.Shared = collection.Shared;
 
@@ -128,10 +126,10 @@ namespace MyFinances.Controllers
                 history.DatePaid = bill.DueDate;
                 history.Payee = bill.Payee;
                 history.PaymentTypeId = bill.PaymentTypeId;
-                history.IssueDate = bill.IssueDate;
                 history.Bill = bill;
+                ViewBag.Action = "Add";
 
-                return View(history);
+                return View("Payment", history);
             }
         }
 
@@ -140,6 +138,7 @@ namespace MyFinances.Controllers
         {
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
+                ViewBag.Action = "Add";
                 try
                 {
                     BillHistory history = new BillHistory();
@@ -155,7 +154,6 @@ namespace MyFinances.Controllers
                     history.DatePaid = collection.DatePaid;
                     history.Payee = collection.Payee;
                     history.PaymentTypeId = collection.PaymentTypeId;
-                    history.IssueDate = collection.IssueDate;
                     
                     bill.BillHistories.Add(history);
 
@@ -183,7 +181,7 @@ namespace MyFinances.Controllers
                 }
                 catch
                 {
-                    return View(collection);
+                    return View("Payment", collection);
                 }
             }
         }
@@ -194,7 +192,8 @@ namespace MyFinances.Controllers
             {
                 BillHistory history = context.GetBillHistoryItem(id);
                 history.Bill = context.GetBill(history.BillId);
-                return View(history);
+                ViewBag.Action = "Edit";
+                return View("Payment", history);
             }
         }
 
@@ -204,7 +203,7 @@ namespace MyFinances.Controllers
             using (LinkToDBDataContext context = new LinkToDBDataContext())
             {
                 BillHistory history = context.GetBillHistoryItem(collection.Id);
-
+                ViewBag.Action = "Edit";
                 try
                 {
                     history.ModifyDate = DateTime.Now;
@@ -212,7 +211,6 @@ namespace MyFinances.Controllers
                     history.DatePaid = collection.DatePaid;
                     history.Amount = collection.Amount;
                     history.Payee = collection.Payee;
-                    history.IssueDate = collection.IssueDate;
                     
                     context.SubmitChanges();
 
@@ -220,7 +218,7 @@ namespace MyFinances.Controllers
                 }
                 catch
                 {
-                    return View(history);
+                    return View("Payment", history);
                 }
             }
         }
@@ -241,7 +239,6 @@ namespace MyFinances.Controllers
                 history.DatePaid = bill.DueDate;
                 history.Payee = bill.Payee;
                 history.PaymentTypeId = bill.PaymentTypeId;
-                history.IssueDate = bill.IssueDate;
                 history.Bill = bill;
 
                 if (bill.StaysSame || bill.BillHistoryAverage == null)
