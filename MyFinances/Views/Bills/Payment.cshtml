@@ -1,0 +1,87 @@
+﻿@model BillHistory
+
+@{
+    ViewBag.Title = ViewBag.Action + " Bill Payment - " + Model.Bill.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="clear-after">
+    <div class="pull-right">
+        @Html.ActionLink("Back to Bill", "Edit", new { id = Model.Bill.Id }, new { @class = "btn btn-danger" })
+    </div>
+    <h1>@ViewBag.Title</h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-md-6">
+        <div class="update-form">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-vertical">
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DatePaid, new { @class = "control-label" })
+                        @Html.EditorFor(model => model.DatePaid, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DatePaid)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Amount, new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Amount, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Amount)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Payee, new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Payee, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Payee)
+                    </div>
+
+                    <div class="form-group text-center">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6">
+        <h2>Recent Payments</h2>
+
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.Bill.BillHistory.First().DatePaid)</th>
+                @if (Model.Bill.HistoryDiffPayee)
+                {
+                    <th>@Html.DisplayNameFor(m => m.Bill.BillHistory.First().Payee)</th>
+                }
+                <th class="text-right">@Html.DisplayNameFor(m => m.Bill.BillHistory.First().Amount)</th>
+            </tr>
+
+            @if (Model.Bill.BillHistory != null)
+            {
+                int count = 0;
+                foreach (var item in Model.Bill.BillHistory)
+                {
+                    count += 1;
+                    if (count > 12)
+                    {
+                        break;
+                    }
+                    <tr>
+                        <td>@Html.ActionLink(Html.DisplayFor(m => item.DatePaid).ToString(), "HistoryEdit", new { id = item.Id })</td>
+                        @if (Model.Bill.HistoryDiffPayee)
+                        {
+                            <td>@Html.DisplayFor(m => item.Payee)</td>
+                        }
+                        <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</div>
