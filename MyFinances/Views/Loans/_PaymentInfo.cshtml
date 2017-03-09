@@ -1,0 +1,91 @@
+﻿@model Loan
+
+@if (ViewBag.Action != "Add" || ViewBag.Calculate)
+{
+    <div class="col-xs-12 col-sm-6 col-md-12">
+        <h3>Payment Info</h3>
+        <div class="tab-content">
+            <div class="table-container">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Principal)</th>
+                            <td class="text-right">@Html.DisplayFor(model => model.Principal)</td>
+                        </tr>
+                        @if (Model.BasePayment > 0 && Model.BasePayment != Model.MonthlyPayment)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.BasePayment)</th>
+                                <td class="text-right">@Html.DisplayFor(model => model.BasePayment)</td>
+                            </tr>
+                        }
+                        @if (Model.Escrow > 0)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Escrow)</th>
+                                <td class="text-right">@Html.DisplayFor(model => model.Escrow)</td>
+                            </tr>
+                        }
+                        @if (Model.AddPayment > 0)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.AddPayment)</th>
+                                <td class="text-right">@Html.DisplayFor(model => model.AddPayment)</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.MonthlyPayment)</th>
+                            <td class="text-right">@Html.DisplayFor(model => model.MonthlyPayment)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h3>Totals</h3>
+        <div class="tab-content">
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayFor(model => model.LifeNumberOfPayments) @Html.DisplayNameFor(model => model.LifeNumberOfPayments)</th>
+                            <th class="text-right">Averages</th>
+                            <th class="text-right">Totals</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.LifePaymentTotal)</th>
+                            <td class="text-right">@Html.DisplayFor(model => model.LifePaymentAverage)</td>
+                            <td class="text-right">@Html.DisplayFor(model => model.LifePaymentTotal)</td>
+                        </tr>
+                        @if (Model.LifeInterestTotal > 0)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.LifeInterestTotal)</th>
+                                <td class="text-right">@Html.DisplayFor(model => model.LifeInterestAverage)</td>
+                                <td class="text-right">@Html.DisplayFor(model => model.LifeInterestTotal)</td>
+                            </tr>
+                        }
+                        @if (Model.LifeEscrowTotal > 0)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.LifeEscrowTotal)</th>
+                                <td class="text-right">@Html.DisplayFor(model => model.LifeEscrowAverage)</td>
+                                <td class="text-right">@Html.DisplayFor(model => model.LifeEscrowTotal)</td>
+                            </tr>
+                        }
+                        @if (Model.LifeAdditionalTotal > 0)
+                        {
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.LifeAdditionalTotal)</th>
+                                <td class="text-right">@Html.DisplayFor(model => model.LifeAdditionalAverage)</td>
+                                <td class="text-right">@Html.DisplayFor(model => model.LifeAdditionalTotal)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
