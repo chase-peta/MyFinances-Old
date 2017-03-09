@@ -1,13 +1,7 @@
 ﻿@model Bill
 
 @{
-    if (ViewBag.Action == "Add")
-    {
-        ViewBag.Title = "Add Bill";
-    } else
-    {
-        ViewBag.Title = Model.Name + " Bill";
-    }
+    ViewBag.Title = ((ViewBag.Action != "Add") ? Model.Name : ViewBag.Action) + " Bill";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -19,8 +13,7 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-4 col-md-3">
-
+    <div class="col-xs-12 col-sm-4 col-md-3">
         <div class="details">
             @if (ViewBag.Action == "View")
             {
@@ -51,10 +44,6 @@
                                 <tr>
                                     <th>@Html.DisplayNameFor(model => model.Shared)</th>
                                     <td>@Html.DisplayFor(model => model.Shared)</td>
-                                </tr>
-                                <tr>
-                                    <th>@Html.DisplayNameFor(model => model.IssueDate)</th>
-                                    <td>@Html.DisplayFor(model => model.IssueDate)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -101,12 +90,6 @@
                             </div>
 
                             <div class="form-group">
-                                @Html.LabelFor(model => model.IssueDate, new { @class = "control-label" })
-                                @Html.EditorFor(model => model.IssueDate, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.IssueDate)
-                            </div>
-
-                            <div class="form-group">
                                 @Html.EditorFor(model => model.StaysSame)
                                 @Html.LabelFor(model => model.StaysSame, new { @class = "control-label" })
                                 @Html.ValidationMessageFor(model => model.StaysSame)
@@ -128,7 +111,7 @@
 
             @if (ViewBag.Action != "Add")
             {
-                <h4>Last Payment</h4>
+                <h2>Last Payment</h2>
                 <div class="tab-content">
                     <div class="table-container">
                         <table class="table table-striped">
@@ -146,7 +129,7 @@
                     </div>
                 </div>
 
-                <h4>Overal Averages</h4>
+                <h2>Overal Averages</h2>
                 <div class="tab-content">
                     <div class="table-container">
                         <table class="table table-striped">
@@ -173,16 +156,54 @@
 
     @if (ViewBag.Action != "Add")
     {
-        <div class="col-sm-8 col-md-9">
+        <div class="col-xs-12 col-sm-8 col-md-9">
             <div id="BillTabs">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#billMonthlyAverages" aria-controls="billMonthlyAverages" role="tab" data-toggle="tab" class="btn-md">Monthly Averages</a></li>
-                    <li role="presentation"><a href="#billPaymentHistory" aria-controls="billPaymentHistory" role="tab" data-toggle="tab" class="btn-md">Payment History</a></li>
+                    <li role="presentation" class="active"><a href="#billPaymentHistory" aria-controls="billPaymentHistory" role="tab" data-toggle="tab" class="btn-md">Payment History</a></li>
+                    <li role="presentation"><a href="#billMonthlyAverages" aria-controls="billMonthlyAverages" role="tab" data-toggle="tab" class="btn-md">Monthly Averages</a></li>
                 </ul>
 
                 <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="billPaymentHistory">
+                        @if (Model.BillHistory != null)
+                        {
+                            <div class="text-center">
+                                <ul class="pagination">
+                                    @for (int i = Model.MaxYear; i >= Model.MinYear; i--)
+                                    {
+                                        <li><a href="#" data-year="@i">@i</a></li>
+                                    }
+                                    <li><a href="#" data-year="">Show All</a></li>
+                                </ul>
+                            </div>
 
-                    <div role="tabpanel" class="tab-pane fade in active" id="billMonthlyAverages">
+                            <div class="table-container border-bottom-ddd">
+                                <table class="table table-striped hidden-on-load" id="BillPaymentHistoryTable">
+                                    <thead>
+                                        <tr>
+                                            <th>@Html.DisplayNameFor(m => m.BillHistory.First().DatePaid)</th>
+                                            <th>@Html.DisplayNameFor(m => m.BillHistory.First().Payee)</th>
+                                            <th class="text-right">@Html.DisplayNameFor(m => m.BillHistory.First().Amount)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.BillHistory)
+                                        {
+                                            <tr>
+                                                <th data-search="@item.DatePaid.Year" data-order="@((item.DatePaid - new DateTime(2000, 1, 1)).Days)">
+                                                    @Html.ActionLink(item.DatePaid.ToString("MMMM - dd"), "EditPayment", new { id = item.Id })
+                                                </th>
+                                                <td>@Html.DisplayFor(m => item.Payee)</td>
+                                                <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="billMonthlyAverages">
                         @if (Model.BillHistoryAverage != null)
                         {
                             <div class="table-container">
@@ -203,7 +224,7 @@
                                             count += 1;
                                             <tr>
                                                 <td data-order="@count" class="hidden"></td>
-                                                <td data-order="@item.Month.Month">@Html.DisplayFor(m => item.Month)</td>
+                                                <th data-order="@item.Month.Month">@Html.DisplayFor(m => item.Month)</th>
                                                 <td class="text-right">@Html.DisplayFor(m => item.Minimum)</td>
                                                 <td class="text-right">@Html.DisplayFor(m => item.Maximum)</td>
                                                 <td class="text-right">@Html.DisplayFor(m => item.Average)</td>
@@ -221,57 +242,8 @@
                                     </tfoot>
                                 </table>
                             </div>
-                                            }
-                    </div>
-
-                    <div role="tabpanel" class="tab-pane fade" id="billPaymentHistory">
-                        @if (Model.BillHistory != null)
-                        {
-                            <div class="table-container border-bottom-ddd">
-                                <table class="table table-striped hidden-on-load" id="BillPaymentHistoryTable">
-                                    <thead>
-                                        <tr>
-                                            <th>@Html.DisplayNameFor(m => m.BillHistory.First().DatePaid)</th>
-                                            <th class="hidden-xs">@Html.DisplayNameFor(m => m.BillHistory.First().Payee)</th>
-                                            <th class="hidden-xs">@Html.DisplayNameFor(m => m.BillHistory.First().IssueDate)</th>
-                                            <th class="text-right">@Html.DisplayNameFor(m => m.BillHistory.First().Amount)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in Model.BillHistory)
-                                        {
-                                            <tr>
-                                                <td data-search="@item.DatePaid.Year" data-order="@((item.DatePaid - new DateTime(2000, 1, 1)).Days)">
-                                                    @Html.ActionLink(item.DatePaid.ToString("MMMM - dd"), "EditPayment", new { id = item.Id })
-                                                </td>
-                                                <td class="hidden-xs">@Html.DisplayFor(m => item.Payee)</td>
-                                                <td class="hidden-xs">@Html.DisplayFor(m => item.IssueDate)</td>
-                                                <td class="text-right">@Html.DisplayFor(m => item.Amount)</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Total:</th>
-                                            <th class="hidden-xs"></th>
-                                            <th class="hidden-xs"></th>
-                                            <th class="total text-right"></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            <div class="text-center">
-                                <ul class="pagination">
-                                    @for (int i = Model.MaxYear; i >= Model.MinYear; i--)
-                                    {
-                                        <li><a href="#" data-year="@i">@i</a></li>
-                                    }
-                                </ul>
-                            </div>
                         }
                     </div>
-
                 </div>
             </div>
         </div>
