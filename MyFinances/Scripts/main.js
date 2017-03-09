@@ -1,4 +1,9 @@
-﻿$(function() {
+﻿Number.prototype.format = function (n, x) {
+    var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+    return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+};
+
+$(function () {
     var intVal = function(num) {
         return typeof num === 'string' ?
         num.replace(/[\$,]/g,'') * 1 :
@@ -6,16 +11,65 @@
             num : 0;
     }
 
+    var year;
+
+    if ($("#loanPaymentId")) {
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+            lpId = $("#loanPaymentId").val(),
+            rStr = "#LoanPayment-" + lpId,
+            currentPrincipal = intVal($(rStr).attr("data-current-principal")),
+
+            $fDatePaid = $("#DatePaid"),
+            $fInterest = $("#Interest"),
+            $fEscrow = $("#Escrow"),
+            $fBase = $("#BasicPayment"),
+            $fAdd = $("#AddPayment"),
+
+            $rDatePaid = $(rStr + " .datePaid"),
+            $rInterest = $(rStr + " .interest"),
+            $rEscrow = $(rStr + " .escrow"),
+            $rBase = $(rStr + " .base"),
+            $rAdd = $(rStr + " .add"),
+            $rPayment = $(rStr + " .payment"),
+            $rPrincipal = $(rStr + " .principal");
+
+        year = $(rStr + " th").attr("data-search"),
+        $(rStr).removeClass("alert-danger").removeClass("alert-success").removeClass("alert-warning").addClass("alert-info");
+
+        function calc() {
+            var pri = intVal($fAdd.val()) + intVal($fBase.val()),
+                payment = pri + intVal($fEscrow.val()) + intVal($fInterest.val()),
+                principal = currentPrincipal - pri;
+            $rPayment.text('$' + payment.format(2));
+            $rPrincipal.text('$' + principal.format(2));
+        }
+
+        $fDatePaid.keyup(function () {
+            var datePaid = new Date($(this).val() + " 00:00");
+            $rDatePaid.text(months[datePaid.getMonth()] + ' - ' + datePaid.getDate());
+        });
+
+        $fInterest.keyup(function () { $rInterest.text('$' + intVal($(this).val()).format(2)); calc(); })
+            .focus(function () { $(this).select(); });
+
+        $fEscrow.keyup(function () { $rEscrow.text('$' + intVal($(this).val()).format(2)); calc(); })
+            .focus(function () { $(this).select(); });
+
+        $fBase.keyup(function () { $rBase.text('$' + intVal($(this).val()).format(2)); calc(); })
+            .focus(function () { $(this).select(); });
+
+        $fAdd.keyup(function () { $rAdd.text('$' + intVal($(this).val()).format(2)); calc(); })
+            .focus(function () { $(this).select(); });
+    }
+
     var $billPaymentHistoryTable = $("#BillPaymentHistoryTable"),
         $billMonthlyAveragesTable = $("#BillMonthlyAveragesTable"),
         $loanPaymentHistoryTable = $("#LoanPaymentHistoryTable"),
-        $loanPaymentOutlookTable = $("#LoanPaymentOutlookTable"),
-        selectedYear = false;
+        $loanPaymentOutlookTable = $("#LoanPaymentOutlookTable");
 
     $(".nav-tabs li a").click(function(e) {
         e.preventDefault();
         $(this).tab;
-        selectedYear = false;
         var thisTab = $(this).attr("aria-controls");
         if (thisTab == "billPaymentHistory") {
             loadBillPaymentHistoryTable();
@@ -41,27 +95,11 @@
             $billPaymentHistoryTable = $billPaymentHistoryTable.DataTable({
                 info: false,
                 paging: false,
-                order: [[0,"asc"]],
-                "bSortClasses": false,
-                footerCallback: function(row,data,start,end,display) {
-
-                    if (selectedYear) {
-                        var total = 0.00,
-                            i = 0,
-                            displayLength = display.length;
-
-                        for (var i = 0;i < displayLength;i++) {
-                            total += intVal(data[display[i]][3]);
-                        }
-                        total = ((total * 100) + "").split(".")[0] / 100;
-                        $(row).find(".total").html("$" + total);
-                    }
-                }
+                ordering: false
             });
             
             $("#billPaymentHistory .pagination>li>a").click(function(e) {
                 e.preventDefault();
-                selectedYear = true;
                 $billPaymentHistoryTable.column(0).search($(this).attr("data-year")).draw();
                 $("#billPaymentHistory .pagination>li").removeClass("active");
                 $(this).parent("li").addClass("active");
@@ -85,19 +123,20 @@
             $loanPaymentHistoryTable = $loanPaymentHistoryTable.DataTable({
                 info: false,
                 paging: false,
-                order: [[0,"desc"]],
-                "bSortClasses": false,
-                footerCallback: LoanOnComplete
+                ordering: false
             });
 
             $("#loanPaymentHistory .pagination>li>a").click(function(e) {
                 e.preventDefault();
-                selectedYear = true;
                 $loanPaymentHistoryTable.column(0).search($(this).attr("data-year")).draw();
                 $("#loanPaymentHistory .pagination>li").removeClass("active");
                 $(this).parent("li").addClass("active");
             });
-            $("#loanPaymentHistory .pagination>li:first()>a").click();
+            if (year) {
+                $("#loanPaymentHistory .pagination>li>a[data-year=" + year + "]").click();
+            } else {
+                $("#loanPaymentHistory .pagination>li:first()>a").click();
+            }
         }
     }
 
@@ -106,82 +145,17 @@
             $loanPaymentOutlookTable = $loanPaymentOutlookTable.DataTable({
                 info: false,
                 paging: false,
-                order: [[0,"asc"]],
-                "bSortClasses": false,
-                footerCallback: LoanOnComplete
+                ordering: false
             });
 
             $("#loanPaymentOutlook .pagination>li>a").click(function(e) {
                 e.preventDefault();
-                selectedYear = true;
                 $loanPaymentOutlookTable.column(0).search($(this).attr("data-year")).draw();
                 $("#loanPaymentOutlook .pagination>li").removeClass("active");
                 $(this).parent("li").addClass("active");
             });
             $("#loanPaymentOutlook .pagination>li:first()>a").click();
         }
-    }
-
-    function LoanOnComplete(row,data,start,end,display) {
-        if (selectedYear) {
-            var interestTotal = 0.00,
-                escrowTotal = 0.00,
-                baseTotal = 0.00,
-                addTotal = 0.00,
-                paymentTotal = 0.00,
-                i = 0,
-                displayLength = display.length;
-
-            for (var i = 0;i < displayLength;i++) {
-                interestTotal += intVal(data[display[i]][1]);
-                escrowTotal += intVal(data[display[i]][2]);
-                baseTotal += intVal(data[display[i]][3]);
-                addTotal += intVal(data[display[i]][4]);
-                paymentTotal += intVal(data[display[i]][5]);
-            }
-            interestTotal = ((interestTotal * 100) + "").split(".")[0] / 100;
-            escrowTotal = ((escrowTotal * 100) + "").split(".")[0] / 100;
-            baseTotal = ((baseTotal * 100) + "").split(".")[0] / 100;
-            addTotal = ((addTotal * 100) + "").split(".")[0] / 100;
-            paymentTotal = ((paymentTotal * 100) + "").split(".")[0] / 100;
-            var total = (((addTotal + baseTotal) * 100) + "").split(".")[0] / 100;
-
-            $(row).find(".interestTotal").html("$" + interestTotal);
-            $(row).find(".escrowTotal").html("$" + escrowTotal);
-            $(row).find(".baseTotal").html("$" + baseTotal);
-            $(row).find(".addTotal").html("$" + addTotal);
-            $(row).find(".paymentTotal").html("$" + paymentTotal);
-            $(row).find(".total").html("$" + total);
-        }
-    }
-
-    if ($("#LoanPaymentHelper")) {
-
-        var $currentPrincipal = $("#currentPrincipal"),
-            $basePayment = $("#basePaymentHelper"),
-            $addPayment = $("#addPaymentHelper"),
-            $totalPayment = $("#totalPayment"),
-            $newPrincipal = $("#newPrincipal"),
-            totalPayment = 0.00;
-
-        function calculateNewBalance() {
-            totalPayment = intVal($basePayment.text()) + intVal($addPayment.text())
-            $totalPayment.text("$" + totalPayment);
-            $newPrincipal.text("$" + (intVal($currentPrincipal.text()) - totalPayment));
-        }
-        calculateNewBalance();
-
-        var $textBoxBasePayment = $("#BasicPayment"),
-            $textBoxAddPayment = $("#AddPayment");
-
-        $textBoxBasePayment.keyup(function() {
-            $basePayment.text($(this).val());
-            calculateNewBalance();
-        });
-        $textBoxAddPayment.keyup(function() {
-            $addPayment.text($(this).val());
-            calculateNewBalance();
-        });
     }
 
     $('.nav-tabs > li > a').on('click', function (e) {
